@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  lago-api:
+    image: getlago/api:latest
+    ports:
+      - "8002:3000"
+    environment:
+      - DATABASE_URL=postgresql://lago:password@lago-db:5432/lago
+      - REDIS_URL=redis://lago-redis:6379/0
+      - LAGO_RSA_PRIVATE_KEY=${LAGO_RSA_PRIVATE_KEY}
+    depends_on:
+      - lago-db
+      - lago-redis
+
+  lago-db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=lago
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=lago
+    volumes:
+      - lago_db_data:/var/lib/postgresql/data
+
+  lago-redis:
+    image: redis:7-alpine
+    volumes:
+      - lago_redis_data:/data
+
+volumes:
+  lago_db_data:
+  lago_redis_data:

@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environments
+.env
+.env.local
+.env.*.local
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Build outputs
+dist/
+build/
+.svelte-kit/
+.output/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+logs/
+*.log
+
+# Misc
+.cache/
