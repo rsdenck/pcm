@@ -8,9 +8,9 @@
 
 # PCM – Proxmox Center Manager
 
-**Cloud Control Plane for Enterprise Proxmox Infrastructure**
+**Plano de Controle Cloud para Infraestrutura Proxmox Enterprise**
 
-_"Transforming Proxmox into a complete cloud platform."_
+_"Transformando Proxmox em uma plataforma cloud completa."_
 
 </td>
 </tr>
@@ -35,7 +35,9 @@ _"Transforming Proxmox into a complete cloud platform."_
 <tr>
 <td align="center">
 
-[Features](#features) • [Architecture](#architecture) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Lab Setup](#lab-setup)
+**[🇧🇷 Português](#visão-geral)** • **[🇺🇸 English](README.en.md)**
+
+[Recursos](#recursos) • [Arquitetura](#arquitetura) • [Início Rápido](#início-rápido) • [Documentação](#documentação) • [Laboratório](#configuração-do-laboratório)
 
 </td>
 </tr>
@@ -45,28 +47,28 @@ _"Transforming Proxmox into a complete cloud platform."_
 
 ---
 
-## Overview
+## Visão Geral
 
-PCM (Proxmox Center Manager) is an **enterprise-grade Cloud Control Plane** that transforms Proxmox VE infrastructure into a fully-featured cloud platform. Built for large-scale deployments with multi-cluster management, multi-tenancy, and complete automation.
+PCM (Proxmox Center Manager) é um **Plano de Controle Cloud de nível enterprise** que transforma a infraestrutura Proxmox VE em uma plataforma cloud completa. Construído para implantações em larga escala com gerenciamento multi-cluster, multi-tenancy e automação completa.
 
 <div align="center">
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    CONTROL PLANE (PCM)                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
-│  │   API    │  │Scheduler │  │ Tenant   │  │Observ.   │     │
-│  │ Gateway  │  │ Engine   │  │ Manager  │  │ Stack    │     │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │
+│                 PLANO DE CONTROLE (PCM)                     │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │   API    │  │Agendador │  │ Tenant   │  │Observ.   │   │
+│  │ Gateway  │  │  Tarefas │  │ Manager  │  │  Stack   │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
 └─────────────────────────────────────────────────────────────┘
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    COMPUTE PLANE                            │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
-│  │Cluster 1 │  │Cluster 2 │  │Cluster 3 │  │Cluster N │     │
-│  │ PVE/PBS  │  │ PVE/PBS  │  │ PVE/PBS  │  │ PVE/PBS  │     │
-│  │   PMG    │  │   PMG    │  │   PMG    │  │   PMG    │     │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │
+│                   PLANO DE COMPUTAÇÃO                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │Cluster 1 │  │Cluster 2 │  │Cluster 3 │  │Cluster N │   │
+│  │ PVE/PBS  │  │ PVE/PBS  │  │ PVE/PBS  │  │ PVE/PBS  │   │
+│  │   PMG    │  │   PMG    │  │   PMG    │  │   PMG    │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -74,7 +76,7 @@ PCM (Proxmox Center Manager) is an **enterprise-grade Cloud Control Plane** that
 
 ---
 
-## Features
+## Recursos
 
 <div align="center">
 
@@ -82,44 +84,44 @@ PCM (Proxmox Center Manager) is an **enterprise-grade Cloud Control Plane** that
 <tr>
 <td valign="top" width="50%">
 
-### Core Capabilities
+### Capacidades Principais
 
-![Multi-Cluster](https://img.shields.io/badge/-Multi--Cluster_Management-000000?style=for-the-badge&logo=server&logoColor=ff7a00)
+![Multi-Cluster](https://img.shields.io/badge/-Gerenciamento_Multi--Cluster-000000?style=for-the-badge&logo=server&logoColor=ff7a00)
 
-Centralized control of multiple Proxmox clusters across different sites and regions.
+Controle centralizado de múltiplos clusters Proxmox em diferentes sites e regiões.
 
 ![Multi-Tenancy](https://img.shields.io/badge/-Multi--Tenancy-000000?style=for-the-badge&logo=users&logoColor=ff7a00)
 
-Complete tenant isolation with role-based access control (RBAC).
+Isolamento completo de tenants com controle de acesso baseado em funções (RBAC).
 
-![Automation](https://img.shields.io/badge/-Automated_Provisioning-000000?style=for-the-badge&logo=robot&logoColor=ff7a00)
+![Automation](https://img.shields.io/badge/-Provisionamento_Automatizado-000000?style=for-the-badge&logo=robot&logoColor=ff7a00)
 
-Async VM/Container deployment with intelligent queue management.
+Deploy assíncrono de VMs/Containers com gerenciamento inteligente de filas.
 
-![Observability](https://img.shields.io/badge/-Unified_Observability-000000?style=for-the-badge&logo=grafana&logoColor=ff7a00)
+![Observability](https://img.shields.io/badge/-Observabilidade_Unificada-000000?style=for-the-badge&logo=grafana&logoColor=ff7a00)
 
-OpenTelemetry-based metrics, traces, and logs aggregation.
+Agregação de métricas, traces e logs baseada em OpenTelemetry.
 
 </td>
 <td valign="top" width="50%">
 
-### Platform Features
+### Recursos da Plataforma
 
-![SDN](https://img.shields.io/badge/-SDN_Integration-000000?style=for-the-badge&logo=cisco&logoColor=ff7a00)
+![SDN](https://img.shields.io/badge/-Integração_SDN-000000?style=for-the-badge&logo=cisco&logoColor=ff7a00)
 
-Native Software-Defined Networking support.
+Suporte nativo para Software-Defined Networking.
 
-![Ceph](https://img.shields.io/badge/-Ceph_Storage-000000?style=for-the-badge&logo=ceph&logoColor=ff7a00)
+![Ceph](https://img.shields.io/badge/-Storage_Ceph-000000?style=for-the-badge&logo=ceph&logoColor=ff7a00)
 
-First-class Ceph storage management and monitoring.
+Gerenciamento e monitoramento de storage Ceph de primeira classe.
 
-![API](https://img.shields.io/badge/-RESTful_API-000000?style=for-the-badge&logo=fastapi&logoColor=ff7a00)
+![API](https://img.shields.io/badge/-API_RESTful-000000?style=for-the-badge&logo=fastapi&logoColor=ff7a00)
 
-Complete API coverage with OpenAPI documentation.
+Cobertura completa de API com documentação OpenAPI.
 
-![UI](https://img.shields.io/badge/-Modern_Dashboard-000000?style=for-the-badge&logo=vue.js&logoColor=ff7a00)
+![UI](https://img.shields.io/badge/-Dashboard_Moderno-000000?style=for-the-badge&logo=vue.js&logoColor=ff7a00)
 
-Responsive web interface built with Nuxt 3.
+Interface web responsiva construída com Nuxt 3.
 
 </td>
 </tr>
@@ -129,7 +131,7 @@ Responsive web interface built with Nuxt 3.
 
 ---
 
-## Technology Stack
+## Stack Tecnológica
 
 <div align="center">
 
@@ -137,7 +139,7 @@ Responsive web interface built with Nuxt 3.
 <tr>
 <td valign="top" width="50%">
 
-### Backend Stack
+### Stack Backend
 
 ![Python](https://img.shields.io/badge/Python_3.12+-000000?style=for-the-badge&logo=python&logoColor=ff7a00)
 ![FastAPI](https://img.shields.io/badge/FastAPI-000000?style=for-the-badge&logo=fastapi&logoColor=ff7a00)
@@ -146,7 +148,7 @@ Responsive web interface built with Nuxt 3.
 ![Celery](https://img.shields.io/badge/Celery-000000?style=for-the-badge&logo=celery&logoColor=ff7a00)
 ![AsyncIO](https://img.shields.io/badge/AsyncIO-000000?style=for-the-badge&logo=python&logoColor=ff7a00)
 
-**Observability**
+**Observabilidade**
 
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-000000?style=for-the-badge&logo=opentelemetry&logoColor=ff7a00)
 ![Prometheus](https://img.shields.io/badge/Prometheus-000000?style=for-the-badge&logo=prometheus&logoColor=ff7a00)
@@ -154,7 +156,7 @@ Responsive web interface built with Nuxt 3.
 </td>
 <td valign="top" width="50%">
 
-### Frontend Stack
+### Stack Frontend
 
 ![Nuxt](https://img.shields.io/badge/Nuxt_3-000000?style=for-the-badge&logo=nuxt.js&logoColor=ff7a00)
 ![Vue](https://img.shields.io/badge/Vue_3-000000?style=for-the-badge&logo=vue.js&logoColor=ff7a00)
@@ -163,7 +165,7 @@ Responsive web interface built with Nuxt 3.
 ![TypeScript](https://img.shields.io/badge/TypeScript-000000?style=for-the-badge&logo=typescript&logoColor=ff7a00)
 ![Vite](https://img.shields.io/badge/Vite-000000?style=for-the-badge&logo=vite&logoColor=ff7a00)
 
-**Infrastructure**
+**Infraestrutura**
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL_18-000000?style=for-the-badge&logo=postgresql&logoColor=ff7a00)
 ![Redis](https://img.shields.io/badge/Redis_7-000000?style=for-the-badge&logo=redis&logoColor=ff7a00)
@@ -176,31 +178,31 @@ Responsive web interface built with Nuxt 3.
 
 ---
 
-## Architecture
+## Arquitetura
 
 <div align="center">
 
-### Microservices Design
+### Design de Microserviços
 
-| Service | Purpose | Technology |
-|---------|---------|------------|
-| ![API](https://img.shields.io/badge/-API_Gateway-000000?style=flat-square&logo=fastapi&logoColor=ff7a00) | Main API & WebSocket | FastAPI |
-| ![Scheduler](https://img.shields.io/badge/-Scheduler-000000?style=flat-square&logo=clockify&logoColor=ff7a00) | Task Scheduling | Celery Beat |
-| ![Tenant](https://img.shields.io/badge/-Tenant_Manager-000000?style=flat-square&logo=users&logoColor=ff7a00) | Multi-tenancy | FastAPI |
-| ![Compute](https://img.shields.io/badge/-Compute_Manager-000000?style=flat-square&logo=server&logoColor=ff7a00) | VM/Container Ops | AsyncIO |
-| ![Storage](https://img.shields.io/badge/-Storage_Manager-000000?style=flat-square&logo=database&logoColor=ff7a00) | Storage Ops | Ceph API |
-| ![Network](https://img.shields.io/badge/-Network_Manager-000000?style=flat-square&logo=cisco&logoColor=ff7a00) | SDN Management | Proxmox SDN |
-| ![Telemetry](https://img.shields.io/badge/-Telemetry-000000?style=flat-square&logo=grafana&logoColor=ff7a00) | Metrics Collection | OTEL |
+| Serviço | Propósito | Tecnologia |
+|---------|-----------|------------|
+| ![API](https://img.shields.io/badge/-API_Gateway-000000?style=flat-square&logo=fastapi&logoColor=ff7a00) | API Principal & WebSocket | FastAPI |
+| ![Scheduler](https://img.shields.io/badge/-Agendador-000000?style=flat-square&logo=clockify&logoColor=ff7a00) | Agendamento de Tarefas | Celery Beat |
+| ![Tenant](https://img.shields.io/badge/-Gerenciador_Tenant-000000?style=flat-square&logo=users&logoColor=ff7a00) | Multi-tenancy | FastAPI |
+| ![Compute](https://img.shields.io/badge/-Gerenciador_Compute-000000?style=flat-square&logo=server&logoColor=ff7a00) | Operações VM/Container | AsyncIO |
+| ![Storage](https://img.shields.io/badge/-Gerenciador_Storage-000000?style=flat-square&logo=database&logoColor=ff7a00) | Operações de Storage | Ceph API |
+| ![Network](https://img.shields.io/badge/-Gerenciador_Network-000000?style=flat-square&logo=cisco&logoColor=ff7a00) | Gerenciamento SDN | Proxmox SDN |
+| ![Telemetry](https://img.shields.io/badge/-Telemetria-000000?style=flat-square&logo=grafana&logoColor=ff7a00) | Coleta de Métricas | OTEL |
 
 </div>
 
 ---
 
-## Quick Start
+## Início Rápido
 
 <div align="center">
 
-### Prerequisites
+### Pré-requisitos
 
 ![Python](https://img.shields.io/badge/Python-3.12+-000000?style=flat-square&logo=python&logoColor=ff7a00)
 ![Node](https://img.shields.io/badge/Node.js-20+-000000?style=flat-square&logo=node.js&logoColor=ff7a00)
@@ -210,59 +212,59 @@ Responsive web interface built with Nuxt 3.
 
 </div>
 
-### Installation (Windows)
+### Instalação (Windows)
 
 ```bash
-# 1. Backend Setup
+# 1. Setup Backend
 setup-backend.bat
 
-# 2. Configure environment
-# Edit pcm/.env with your settings
+# 2. Configurar ambiente
+# Editar pcm/.env com suas configurações
 
-# 3. Run migrations
+# 3. Executar migrations
 cd pcm
 venv\Scripts\activate
 alembic upgrade head
 
-# 4. Frontend Setup
+# 4. Setup Frontend
 setup-frontend.bat
 
-# 5. Start all services
+# 5. Iniciar todos os serviços
 start-all.bat
 ```
 
-### Access Points
+### Pontos de Acesso
 
 <div align="center">
 
-| Service | URL | Description |
-|---------|-----|-------------|
-| ![Frontend](https://img.shields.io/badge/-Frontend-000000?style=flat-square&logo=vue.js&logoColor=ff7a00) | http://192.168.130.10:9000 | Web Dashboard |
+| Serviço | URL | Descrição |
+|---------|-----|-----------|
+| ![Frontend](https://img.shields.io/badge/-Frontend-000000?style=flat-square&logo=vue.js&logoColor=ff7a00) | http://192.168.130.10:9000 | Dashboard Web |
 | ![API](https://img.shields.io/badge/-API-000000?style=flat-square&logo=fastapi&logoColor=ff7a00) | http://192.168.130.10:8000 | REST API |
 | ![Docs](https://img.shields.io/badge/-API_Docs-000000?style=flat-square&logo=swagger&logoColor=ff7a00) | http://192.168.130.10:8000/docs | Swagger UI |
-| ![ReDoc](https://img.shields.io/badge/-ReDoc-000000?style=flat-square&logo=readthedocs&logoColor=ff7a00) | http://192.168.130.10:8000/redoc | API Documentation |
+| ![ReDoc](https://img.shields.io/badge/-ReDoc-000000?style=flat-square&logo=readthedocs&logoColor=ff7a00) | http://192.168.130.10:8000/redoc | Documentação API |
 
 </div>
 
 ---
 
-## Lab Setup
+## Configuração do Laboratório
 
 <div align="center">
 
-### Development Cluster Configuration
+### Configuração do Cluster de Desenvolvimento
 
-**PROXMON Development Cluster**
+**Cluster de Desenvolvimento PROXMON**
 
-| Node | IP | Role | Status |
-|------|-----|------|--------|
-| ![PVE-01](https://img.shields.io/badge/-PVE--01-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | 192.168.130.20 | Primary | ![Online](https://img.shields.io/badge/-Online-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) |
-| ![PVE-02](https://img.shields.io/badge/-PVE--02-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | 192.168.130.21 | Secondary | ![Online](https://img.shields.io/badge/-Online-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) |
-| ![PVE-03](https://img.shields.io/badge/-PVE--03-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | 192.168.130.22 | Tertiary | ![Online](https://img.shields.io/badge/-Online-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) |
+| Node | IP | Função | Status |
+|------|-----|--------|--------|
+| ![PVE-01](https://img.shields.io/badge/-PVE--01-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | 192.168.130.20 | Primário | ![Online](https://img.shields.io/badge/-Online-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) |
+| ![PVE-02](https://img.shields.io/badge/-PVE--02-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | 192.168.130.21 | Secundário | ![Online](https://img.shields.io/badge/-Online-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) |
+| ![PVE-03](https://img.shields.io/badge/-PVE--03-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | 192.168.130.22 | Terciário | ![Online](https://img.shields.io/badge/-Online-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) |
 
 </div>
 
-### Initialize Lab Cluster
+### Inicializar Cluster de Laboratório
 
 ```bash
 cd pcm
@@ -270,35 +272,35 @@ venv\Scripts\activate
 python ../init-lab-cluster.py
 ```
 
-See [LAB.md](LAB.md) for complete lab configuration details.
+Veja [LAB.md](LAB.md) para detalhes completos da configuração do laboratório.
 
 ---
 
-## Documentation
+## Documentação
 
 <div align="center">
 
-| Document | Description |
-|----------|-------------|
-| ![Quick Start](https://img.shields.io/badge/-Quick_Start-000000?style=flat-square&logo=rocket&logoColor=ff7a00) | [QUICKSTART.md](QUICKSTART.md) |
-| ![Setup Guide](https://img.shields.io/badge/-Setup_Guide-000000?style=flat-square&logo=book&logoColor=ff7a00) | [SETUP.md](SETUP.md) |
+| Documento | Descrição |
+|-----------|-----------|
+| ![Quick Start](https://img.shields.io/badge/-Início_Rápido-000000?style=flat-square&logo=rocket&logoColor=ff7a00) | [QUICKSTART.md](QUICKSTART.md) |
+| ![Setup Guide](https://img.shields.io/badge/-Guia_Setup-000000?style=flat-square&logo=book&logoColor=ff7a00) | [SETUP.md](SETUP.md) |
 | ![Deployment](https://img.shields.io/badge/-Deployment-000000?style=flat-square&logo=kubernetes&logoColor=ff7a00) | [DEPLOY.md](DEPLOY.md) |
-| ![Migration](https://img.shields.io/badge/-Migration-000000?style=flat-square&logo=git&logoColor=ff7a00) | [MIGRATION.md](MIGRATION.md) |
-| ![Lab Config](https://img.shields.io/badge/-Lab_Config-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | [LAB.md](LAB.md) |
+| ![Migration](https://img.shields.io/badge/-Migração-000000?style=flat-square&logo=git&logoColor=ff7a00) | [MIGRATION.md](MIGRATION.md) |
+| ![Lab Config](https://img.shields.io/badge/-Config_Lab-000000?style=flat-square&logo=proxmox&logoColor=ff7a00) | [LAB.md](LAB.md) |
 
 </div>
 
 ---
 
-## User Roles
+## Funções de Usuário
 
 <div align="center">
 
-| Role | Permissions | Badge |
-|------|-------------|-------|
-| Provider Admin | Full platform access | ![Admin](https://img.shields.io/badge/-Provider_Admin-000000?style=flat-square&logo=shield&logoColor=ff7a00) |
-| Tenant Admin | Tenant-level management | ![Tenant](https://img.shields.io/badge/-Tenant_Admin-000000?style=flat-square&logo=users&logoColor=ff7a00) |
-| Tenant User | Resource consumption | ![User](https://img.shields.io/badge/-Tenant_User-000000?style=flat-square&logo=user&logoColor=ff7a00) |
+| Função | Permissões | Badge |
+|--------|------------|-------|
+| Provider Admin | Acesso completo à plataforma | ![Admin](https://img.shields.io/badge/-Provider_Admin-000000?style=flat-square&logo=shield&logoColor=ff7a00) |
+| Tenant Admin | Gerenciamento nível tenant | ![Tenant](https://img.shields.io/badge/-Tenant_Admin-000000?style=flat-square&logo=users&logoColor=ff7a00) |
+| Tenant User | Consumo de recursos | ![User](https://img.shields.io/badge/-Tenant_User-000000?style=flat-square&logo=user&logoColor=ff7a00) |
 
 </div>
 
@@ -312,28 +314,28 @@ See [LAB.md](LAB.md) for complete lab configuration details.
 <tr>
 <td valign="top" width="50%">
 
-### Completed
+### Concluído
 
-- [x] Core API implementation
-- [x] Multi-cluster support
-- [x] Tenant management
-- [x] Async provisioning
-- [x] Storage management
-- [x] VM/Container sync
-- [x] Modern UI dashboard
+- [x] Implementação da API core
+- [x] Suporte multi-cluster
+- [x] Gerenciamento de tenants
+- [x] Provisionamento assíncrono
+- [x] Gerenciamento de storage
+- [x] Sincronização VM/Container
+- [x] Dashboard UI moderno
 
 </td>
 <td valign="top" width="50%">
 
-### In Progress
+### Em Progresso
 
-- [ ] Advanced RBAC
-- [ ] Billing integration (Lago)
-- [ ] Backup automation
-- [ ] Network topology viz
-- [ ] Cost analytics
-- [ ] Terraform provider
-- [ ] Kubernetes integration
+- [ ] RBAC avançado
+- [ ] Integração billing (Lago)
+- [ ] Automação de backup
+- [ ] Visualização topologia rede
+- [ ] Analytics de custos
+- [ ] Provider Terraform
+- [ ] Integração Kubernetes
 
 </td>
 </tr>
@@ -343,67 +345,67 @@ See [LAB.md](LAB.md) for complete lab configuration details.
 
 ---
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 pcm/
-├── services/          # Microservices
-│   ├── api/          # Main API
-│   ├── scheduler/    # Task scheduling
-│   ├── tenant/       # Tenant management
-│   ├── compute/      # VM/Container ops
-│   ├── storage/      # Storage management
-│   └── network/      # Network management
-├── core/             # Core components
-│   ├── database/     # DB configuration
-│   ├── config/       # Settings
-│   ├── auth/         # Authentication
-│   └── events/       # Event system
-├── workers/          # Background workers
-│   ├── provisioning/ # Provisioning tasks
+├── services/          # Microserviços
+│   ├── api/          # API principal
+│   ├── scheduler/    # Agendamento tarefas
+│   ├── tenant/       # Gerenciamento tenant
+│   ├── compute/      # Operações VM/Container
+│   ├── storage/      # Gerenciamento storage
+│   └── network/      # Gerenciamento rede
+├── core/             # Componentes core
+│   ├── database/     # Configuração DB
+│   ├── config/       # Configurações
+│   ├── auth/         # Autenticação
+│   └── events/       # Sistema eventos
+├── workers/          # Workers background
+│   ├── provisioning/ # Tarefas provisioning
 │   ├── monitoring/   # Health checks
-│   └── telemetry/    # Metrics collection
+│   └── telemetry/    # Coleta métricas
 └── sdk/              # SDKs
-    └── proxmox/      # Proxmox API client
+    └── proxmox/      # Cliente API Proxmox
 
-pcmfe/                # Nuxt 3 application (Frontend)
-├── pages/            # Routes
-├── components/       # Vue components
+pcmfe/                # Aplicação Nuxt 3
+├── pages/            # Rotas
+├── components/       # Componentes Vue
 ├── layouts/          # Layouts
-└── assets/           # Static assets
+└── assets/           # Assets estáticos
 ```
 
 ---
 
-## Contributing
+## Contribuindo
 
 <div align="center">
 
-We welcome contributions! Please follow these steps:
+Contribuições são bem-vindas! Por favor, siga estes passos:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Fork o repositório
+2. Crie uma branch de feature (`git checkout -b feature/recurso-incrivel`)
+3. Commit suas mudanças (`git commit -m 'feat: adiciona recurso incrível'`)
+4. Push para a branch (`git push origin feature/recurso-incrivel`)
+5. Abra um Pull Request
 
 </div>
 
 ---
 
-## License
+## Licença
 
 <div align="center">
 
 [![License](https://img.shields.io/badge/License-MIT-000000?style=for-the-badge&logo=opensourceinitiative&logoColor=ff7a00)](LICENSE)
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 </div>
 
 ---
 
-## Support
+## Suporte
 
 <div align="center">
 
@@ -414,11 +416,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## Acknowledgments
+## Agradecimentos
 
 <div align="center">
 
-Built with modern technologies and inspired by enterprise cloud platforms:
+Construído com tecnologias modernas e inspirado por plataformas cloud enterprise:
 
 ![VMware](https://img.shields.io/badge/-VMware_vCloud-000000?style=flat-square&logo=vmware&logoColor=ff7a00)
 ![OpenStack](https://img.shields.io/badge/-OpenStack-000000?style=flat-square&logo=openstack&logoColor=ff7a00)
@@ -430,19 +432,19 @@ Built with modern technologies and inspired by enterprise cloud platforms:
 
 <div align="center">
 
-### Philosophy
+### Filosofia
 
-_"If it's not monitored, it doesn't exist."_
+_"Se não é monitorado, não existe."_
 
-_"If it's repetitive, it must be automated."_
+_"Se é repetitivo, deve ser automatizado."_
 
-_"Infrastructure is not art. It's engineering."_
+_"Infraestrutura não é arte. É engenharia."_
 
 ---
 
-**[Website](https://github.com/rsdenck/pcm)** • **[Documentation](SETUP.md)** • **[API Reference](http://192.168.130.10:8000/docs)**
+**[Website](https://github.com/rsdenck/pcm)** • **[Documentação](SETUP.md)** • **[Referência API](http://192.168.130.10:8000/docs)**
 
-Made with precision for enterprise infrastructure management
+Feito com precisão para gerenciamento de infraestrutura enterprise
 
 [![GitHub](https://img.shields.io/badge/-rsdenck-000000?style=for-the-badge&logo=github&logoColor=ff7a00)](https://github.com/rsdenck)
 
