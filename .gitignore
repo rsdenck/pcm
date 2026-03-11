@@ -1,30 +1,61 @@
-# Dependencies
-node_modules/
-vendor/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+env/
+ENV/
 
-# Environments
+# Node
+node_modules/
+.nuxt/
+.output/
+.cache/
+dist/
+
+# Environment
 .env
 .env.local
 .env.*.local
 
-# IDEs
+# IDE
 .vscode/
 .idea/
-.DS_Store
+*.swp
+*.swo
+*~
 
-# Build outputs
-dist/
-build/
-.svelte-kit/
-.output/
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
 
 # Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-logs/
 *.log
+logs/
 
-# Misc
-.cache/
+# Alembic
+alembic/versions/*.py
+!alembic/versions/__init__.py
