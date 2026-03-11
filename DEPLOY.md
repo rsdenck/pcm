@@ -51,7 +51,7 @@ python run.py
 
 ```bash
 # Configurar frontend
-cd /opt/pcm/pcm-frontend
+cd /opt/pcm/pcmfe
 npm install
 
 # Configurar .env
@@ -105,7 +105,7 @@ After=network.target pcm-backend.service
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/pcm/pcm-frontend
+WorkingDirectory=/opt/pcm/pcmfe
 Environment="NUXT_PUBLIC_API_BASE=http://192.168.130.10:8000/api/v1"
 ExecStart=/usr/bin/npm run dev -- --host 192.168.130.10 --port 9000
 Restart=always

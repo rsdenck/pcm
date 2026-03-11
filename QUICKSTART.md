@@ -103,7 +103,7 @@ start-workers.bat      → Inicia workers Celery
 - Windows: Instalar via WSL ou usar Redis Windows port
 
 ### Erro no frontend
-- Limpar cache: `cd pcm-frontend && rm -rf .nuxt node_modules && npm install`
+- Limpar cache: `cd pcmfe && rm -rf .nuxt node_modules && npm install`
 
 ### Erro no backend
 - Recriar venv: `cd pcm && rm -rf venv && python -m venv venv`

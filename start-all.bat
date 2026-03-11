@@ -11,7 +11,7 @@ start "PCM Backend" cmd /k "cd pcm && venv\Scripts\activate && python run.py"
 timeout /t 3 /nobreak > nul
 
 echo Starting Frontend...
-start "PCM Frontend" cmd /k "cd pcm-frontend && npm run dev -- --host 192.168.130.10 --port 9000"
+start "PCM Frontend" cmd /k "cd pcmfe && npm run dev -- --host 192.168.130.10 --port 9000"
 
 echo.
 echo ========================================

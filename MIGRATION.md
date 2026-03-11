@@ -38,7 +38,7 @@ pcm/
 ├── workers/        (Celery Workers)
 └── sdk/            (Proxmox SDK)
 
-pcm-frontend/       (Nuxt 3)
+pcmfe/       (Nuxt 3)
 ```
 
 ## Modelos de Dados

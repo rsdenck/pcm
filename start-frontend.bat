@@ -5,7 +5,7 @@ echo Frontend Startup
 echo ========================================
 echo.
 
-cd pcm-frontend
+cd pcmfe
 
 echo Iniciando Nuxt dev server...
 echo Frontend disponivel em: http://localhost:3000

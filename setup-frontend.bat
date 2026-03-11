@@ -5,7 +5,7 @@ echo Frontend Setup
 echo ========================================
 echo.
 
-cd pcm-frontend
+cd pcmfe
 
 echo Instalando dependencias...
 call npm install
