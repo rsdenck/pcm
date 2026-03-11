@@ -56,6 +56,7 @@ class ProxmoxCluster(Base):
 
     tenant: Mapped["Tenant"] = relationship(back_populates="clusters")
     nodes: Mapped[list["ProxmoxNode"]] = relationship(back_populates="cluster", cascade="all, delete-orphan")
+    storage: Mapped[list["Storage"]] = relationship(back_populates="cluster", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<ProxmoxCluster(id={self.id}, name={self.name}, type={self.cluster_type})>"
@@ -90,6 +91,7 @@ class ProxmoxNode(Base):
     )
 
     cluster: Mapped["ProxmoxCluster"] = relationship(back_populates="nodes")
+    vms: Mapped[list["VirtualMachine"]] = relationship(back_populates="node", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<ProxmoxNode(id={self.id}, name={self.name}, status={self.status})>"

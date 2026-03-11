@@ -22,6 +22,7 @@ class Tenant(Base):
 
     users: Mapped[list["User"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     clusters: Mapped[list["ProxmoxCluster"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
+    vms: Mapped[list["VirtualMachine"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Tenant(id={self.id}, name={self.name}, slug={self.slug})>"

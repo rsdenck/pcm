@@ -39,8 +39,9 @@
             </div>
           </template>
           <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.total_clusters }}
+            {{ stats.online_clusters }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_clusters }}</span>
           </div>
+          <div class="mt-2 text-xs text-gray-500">Online / Total</div>
         </UCard>
 
         <UCard>
@@ -51,8 +52,9 @@
             </div>
           </template>
           <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.total_nodes }}
+            {{ stats.online_nodes }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_nodes }}</span>
           </div>
+          <div class="mt-2 text-xs text-gray-500">Online / Total</div>
         </UCard>
 
         <UCard>
@@ -63,20 +65,22 @@
             </div>
           </template>
           <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.total_vms }}
+            {{ stats.running_vms }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_vms }}</span>
           </div>
+          <div class="mt-2 text-xs text-gray-500">Running / Total</div>
         </UCard>
 
         <UCard>
           <template #header>
             <div class="flex items-center justify-between">
-              <UIcon name="i-heroicons-users" class="text-brand-orange text-2xl" />
-              <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Tenants</span>
+              <UIcon name="i-heroicons-cube-transparent" class="text-brand-orange text-2xl" />
+              <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Containers</span>
             </div>
           </template>
           <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.total_tenants }}
+            {{ stats.running_containers }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_containers }}</span>
           </div>
+          <div class="mt-2 text-xs text-gray-500">Running / Total</div>
         </UCard>
       </div>
 
@@ -131,8 +135,13 @@ const loading = ref(true)
 
 const stats = ref({
   total_clusters: 0,
+  online_clusters: 0,
   total_nodes: 0,
+  online_nodes: 0,
   total_vms: 0,
+  running_vms: 0,
+  total_containers: 0,
+  running_containers: 0,
   total_tenants: 0
 })
 
@@ -141,9 +150,12 @@ const clusters = ref([])
 const fetchData = async () => {
   loading.value = true
   try {
-    const { data } = await useFetch(`${config.public.apiBase}/clusters`)
-    clusters.value = data.value || []
-    stats.value.total_clusters = clusters.value.length
+    const { data: dashboardData } = await useFetch(`${config.public.apiBase}/dashboard`)
+    
+    if (dashboardData.value) {
+      stats.value = dashboardData.value.stats
+      clusters.value = dashboardData.value.clusters || []
+    }
   } catch (error) {
     console.error('Failed to fetch data', error)
   } finally {

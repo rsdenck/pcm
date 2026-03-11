@@ -83,30 +83,31 @@ async def get_cluster(cluster_id: str, db: AsyncSession = Depends(get_db)):
     return cluster
 
 
-@router.get("/{cluster_id}/nodes")
-async def get_cluster_nodes(cluster_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(ProxmoxCluster).where(ProxmoxCluster.id == cluster_id))
-    cluster = result.scalar_one_or_none()
+@router.get("/{cluster_id}/sync")
+async def sync_cluster(cluster_id: str, db: AsyncSession = Depends(get_db)):
+    from pcm.services.cluster_service import ClusterService
     
-    if not cluster:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Cluster not found"
-        )
-    
+    service = ClusterService(db)
     try:
-        client = ProxmoxClient(
-            host=cluster.hostname,
-            port=cluster.port,
-            token_id=cluster.api_token_id,
-            token_secret=cluster.api_token_secret,
-            verify_ssl=cluster.verify_ssl,
-        )
-        
-        nodes_data = await client.get_nodes()
-        return nodes_data
+        result = await service.sync_cluster(cluster_id)
+        return result
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Failed to connect to cluster: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+@router.get("/{cluster_id}/stats")
+async def get_cluster_stats(cluster_id: str, db: AsyncSession = Depends(get_db)):
+    from pcm.services.cluster_service import ClusterService
+    
+    service = ClusterService(db)
+    try:
+        stats = await service.get_cluster_stats(cluster_id)
+        return stats
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
         )

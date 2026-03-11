@@ -1,6 +1,8 @@
 from .tenant import Tenant
 from .user import User, UserRole
 from .cluster import ProxmoxCluster, ProxmoxNode, ClusterType, ClusterStatus
+from .vm import VirtualMachine, VMType, VMStatus
+from .storage import Storage, StorageType, StorageStatus
 
 __all__ = [
     "Tenant",
@@ -10,4 +12,10 @@ __all__ = [
     "ProxmoxNode",
     "ClusterType",
     "ClusterStatus",
+    "VirtualMachine",
+    "VMType",
+    "VMStatus",
+    "Storage",
+    "StorageType",
+    "StorageStatus",
 ]

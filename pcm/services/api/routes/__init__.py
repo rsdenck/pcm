@@ -1,3 +1,3 @@
-from . import health, tenants, users, clusters
+from pcm.services.api.routes import clusters, tenants, users, health, dashboard
 
-__all__ = ["health", "tenants", "users", "clusters"]
+__all__ = ["health", "dashboard", "tenants", "users", "clusters"]
