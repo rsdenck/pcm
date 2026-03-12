@@ -45,6 +45,12 @@ from .pbs_server_manager import (
     PBSServerRegistrationError
 )
 
+from .job_runner import (
+    BackupJobRunner,
+    BackupJobRunnerError,
+    BackupExecutionError
+)
+
 from .health_monitor import (
     HealthMonitoringService
 )
@@ -73,5 +79,8 @@ __all__ = [
     'PBSServerManager',
     'PBSServerManagerError',
     'PBSServerRegistrationError',
+    'BackupJobRunner',
+    'BackupJobRunnerError',
+    'BackupExecutionError',
     'HealthMonitoringService'
 ]
