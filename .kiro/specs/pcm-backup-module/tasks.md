@@ -79,7 +79,7 @@ This implementation plan creates a comprehensive Backup-as-a-Service module for 
     - Implement tenant-based datastore assignment
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 5.3 Write property test for PBS server health monitoring
+  - [-] 5.3 Write property test for PBS server health monitoring
     - **Property 4: Server health status consistency**
     - **Validates: Requirements 1.3, 1.4**
 
