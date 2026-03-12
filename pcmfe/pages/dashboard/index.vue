@@ -1,129 +1,160 @@
 <template>
-  <div class="p-4 md:p-8 w-full">
-    <header class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+  <div class="p-6 md:p-8 w-full">
+    <!-- Header -->
+    <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
-        <div class="flex items-center gap-2 mb-2">
-          <div class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse"></div>
-          <span class="text-[8px] font-black text-brand-orange uppercase tracking-[0.4em]">Sistema Ativo</span>
-        </div>
-        <h1 class="text-3xl md:text-5xl font-black text-black dark:text-white tracking-tighter">
-          Visão <span class="text-brand-orange">Geral</span>
-        </h1>
+        <h1 class="text-3xl font-bold text-[#000000] mb-1">Dashboard</h1>
+        <p class="text-sm text-[#666666]">Visão geral da infraestrutura Proxmox</p>
       </div>
       
       <UButton 
         color="primary" 
         @click="refreshData"
-        class="bg-brand-orange hover:bg-brand-orange/90"
+        class="bg-[#E57000] hover:bg-[#CC6600] text-white"
       >
         <UIcon name="i-heroicons-arrow-path" class="mr-2" />
         Sincronizar
       </UButton>
     </header>
 
-    <div v-if="loading" class="flex flex-col justify-center items-center h-[50vh] gap-6">
-      <div class="relative w-16 h-16">
-        <div class="absolute inset-0 border-[4px] border-brand-orange/10 rounded-full"></div>
-        <div class="absolute inset-0 border-[4px] border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+    <!-- Loading State -->
+    <div v-if="loading" class="flex flex-col justify-center items-center h-[50vh] gap-4">
+      <div class="relative w-12 h-12">
+        <div class="absolute inset-0 border-4 border-[#e5e5e5] rounded-full"></div>
+        <div class="absolute inset-0 border-4 border-[#E57000] border-t-transparent rounded-full animate-spin"></div>
       </div>
-      <p class="text-brand-orange font-black animate-pulse uppercase tracking-[0.3em] text-[9px]">Carregando...</p>
+      <p class="text-[#666666] text-sm">Carregando dados...</p>
     </div>
 
+    <!-- Content -->
     <div v-else>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between">
-              <UIcon name="i-heroicons-server" class="text-brand-orange text-2xl" />
-              <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Clusters</span>
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Clusters Card -->
+        <div class="bg-white rounded-lg border border-[#e5e5e5] p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-lg bg-[#E57000]/10 flex items-center justify-center">
+              <UIcon name="i-heroicons-server" class="text-[#E57000] text-2xl" />
             </div>
-          </template>
-          <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.online_clusters }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_clusters }}</span>
+            <span class="text-xs font-medium text-[#999999] uppercase tracking-wide">Clusters</span>
           </div>
-          <div class="mt-2 text-xs text-gray-500">Online / Total</div>
-        </UCard>
+          <div class="text-3xl font-bold text-[#000000] mb-1">
+            {{ stats.online_clusters }}<span class="text-[#999999] text-xl">/{{ stats.total_clusters }}</span>
+          </div>
+          <div class="text-xs text-[#666666]">Online / Total</div>
+        </div>
 
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between">
-              <UIcon name="i-heroicons-cpu-chip" class="text-brand-orange text-2xl" />
-              <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Nodes</span>
+        <!-- Nodes Card -->
+        <div class="bg-white rounded-lg border border-[#e5e5e5] p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-lg bg-[#E57000]/10 flex items-center justify-center">
+              <UIcon name="i-heroicons-cpu-chip" class="text-[#E57000] text-2xl" />
             </div>
-          </template>
-          <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.online_nodes }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_nodes }}</span>
+            <span class="text-xs font-medium text-[#999999] uppercase tracking-wide">Nodes</span>
           </div>
-          <div class="mt-2 text-xs text-gray-500">Online / Total</div>
-        </UCard>
+          <div class="text-3xl font-bold text-[#000000] mb-1">
+            {{ stats.online_nodes }}<span class="text-[#999999] text-xl">/{{ stats.total_nodes }}</span>
+          </div>
+          <div class="text-xs text-[#666666]">Online / Total</div>
+        </div>
 
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between">
-              <UIcon name="i-heroicons-cube" class="text-brand-orange text-2xl" />
-              <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">VMs</span>
+        <!-- VMs Card -->
+        <div class="bg-white rounded-lg border border-[#e5e5e5] p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-lg bg-[#E57000]/10 flex items-center justify-center">
+              <UIcon name="i-heroicons-cube" class="text-[#E57000] text-2xl" />
             </div>
-          </template>
-          <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.running_vms }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_vms }}</span>
+            <span class="text-xs font-medium text-[#999999] uppercase tracking-wide">VMs</span>
           </div>
-          <div class="mt-2 text-xs text-gray-500">Running / Total</div>
-        </UCard>
+          <div class="text-3xl font-bold text-[#000000] mb-1">
+            {{ stats.running_vms }}<span class="text-[#999999] text-xl">/{{ stats.total_vms }}</span>
+          </div>
+          <div class="text-xs text-[#666666]">Running / Total</div>
+        </div>
 
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between">
-              <UIcon name="i-heroicons-cube-transparent" class="text-brand-orange text-2xl" />
-              <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Containers</span>
+        <!-- Containers Card -->
+        <div class="bg-white rounded-lg border border-[#e5e5e5] p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-lg bg-[#E57000]/10 flex items-center justify-center">
+              <UIcon name="i-heroicons-cube-transparent" class="text-[#E57000] text-2xl" />
             </div>
-          </template>
-          <div class="text-4xl font-black text-black dark:text-white tracking-tighter">
-            {{ stats.running_containers }}<span class="text-gray-300 dark:text-gray-800 text-2xl">/{{ stats.total_containers }}</span>
+            <span class="text-xs font-medium text-[#999999] uppercase tracking-wide">Containers</span>
           </div>
-          <div class="mt-2 text-xs text-gray-500">Running / Total</div>
-        </UCard>
+          <div class="text-3xl font-bold text-[#000000] mb-1">
+            {{ stats.running_containers }}<span class="text-[#999999] text-xl">/{{ stats.total_containers }}</span>
+          </div>
+          <div class="text-xs text-[#666666]">Running / Total</div>
+        </div>
       </div>
 
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-xl font-black text-black dark:text-white tracking-tighter uppercase">
-          Clusters Ativos
-        </h2>
-        <UButton to="/dashboard/clusters/new" color="gray">
-          Adicionar Cluster
-        </UButton>
-      </div>
+      <!-- Clusters Section -->
+      <div class="bg-white rounded-lg border border-[#e5e5e5] p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-[#000000]">Clusters Ativos</h2>
+          <UButton 
+            to="/dashboard/clusters/new" 
+            color="gray"
+            class="text-[#333333] hover:bg-[#fafafa]"
+          >
+            <UIcon name="i-heroicons-plus" class="mr-2" />
+            Adicionar Cluster
+          </UButton>
+        </div>
 
-      <div v-if="clusters.length === 0" class="text-center py-20">
-        <UIcon name="i-heroicons-server" class="text-gray-300 dark:text-gray-700 text-6xl mb-4" />
-        <h3 class="text-xl font-black text-black dark:text-white mb-2">Nenhum Cluster</h3>
-        <p class="text-gray-500 mb-8">Adicione seu primeiro cluster Proxmox</p>
-        <UButton to="/dashboard/clusters/new" color="primary" class="bg-brand-orange">
-          Adicionar Cluster
-        </UButton>
-      </div>
+        <!-- Empty State -->
+        <div v-if="clusters.length === 0" class="text-center py-16">
+          <div class="w-16 h-16 rounded-full bg-[#fafafa] flex items-center justify-center mx-auto mb-4">
+            <UIcon name="i-heroicons-server" class="text-[#999999] text-3xl" />
+          </div>
+          <h3 class="text-lg font-semibold text-[#000000] mb-2">Nenhum Cluster Configurado</h3>
+          <p class="text-[#666666] mb-6 max-w-md mx-auto">
+            Adicione seu primeiro cluster Proxmox para começar a gerenciar sua infraestrutura
+          </p>
+          <UButton 
+            to="/dashboard/clusters/new" 
+            class="bg-[#E57000] hover:bg-[#CC6600] text-white"
+          >
+            <UIcon name="i-heroicons-plus" class="mr-2" />
+            Adicionar Cluster
+          </UButton>
+        </div>
 
-      <div v-else class="grid grid-cols-1 gap-4">
-        <UCard v-for="cluster in clusters" :key="cluster.id" class="hover:border-brand-orange/40 transition-all">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-6">
-              <div class="w-14 h-14 bg-gray-50 dark:bg-brand-black rounded-2xl flex items-center justify-center">
-                <UIcon name="i-heroicons-server" class="text-brand-orange text-2xl" />
+        <!-- Clusters List -->
+        <div v-else class="space-y-3">
+          <div 
+            v-for="cluster in clusters" 
+            :key="cluster.id" 
+            class="flex items-center justify-between p-4 rounded-lg border border-[#e5e5e5] hover:border-[#E57000]/30 hover:shadow-sm transition-all"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-lg bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
+                <UIcon name="i-heroicons-server" class="text-[#E57000] text-xl" />
               </div>
               <div>
-                <h3 class="text-lg font-black text-black dark:text-white">{{ cluster.name }}</h3>
-                <p class="text-sm text-gray-500">{{ cluster.hostname }}:{{ cluster.port }}</p>
+                <h3 class="text-sm font-semibold text-[#000000]">{{ cluster.name }}</h3>
+                <p class="text-xs text-[#666666]">{{ cluster.hostname }}:{{ cluster.port }}</p>
               </div>
             </div>
-            <div class="flex items-center gap-4">
-              <UBadge :color="cluster.status === 'online' ? 'green' : 'red'">
-                {{ cluster.status }}
-              </UBadge>
-              <UButton :to="`/dashboard/clusters/${cluster.id}`" color="gray" size="sm">
-                Detalhes
+            <div class="flex items-center gap-3">
+              <span 
+                class="px-3 py-1 rounded-full text-xs font-medium"
+                :class="cluster.status === 'online' 
+                  ? 'bg-green-50 text-green-700 border border-green-200' 
+                  : 'bg-red-50 text-red-700 border border-red-200'"
+              >
+                {{ cluster.status === 'online' ? 'Online' : 'Offline' }}
+              </span>
+              <UButton 
+                :to="`/dashboard/clusters/${cluster.id}`" 
+                color="gray" 
+                size="sm"
+                class="text-[#333333] hover:bg-[#fafafa]"
+              >
+                Ver Detalhes
               </UButton>
             </div>
           </div>
-        </UCard>
+        </div>
       </div>
     </div>
   </div>

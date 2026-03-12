@@ -1,129 +1,164 @@
 <template>
-  <div class="flex h-screen bg-white dark:bg-brand-black text-gray-900 dark:text-gray-100">
-    <aside class="w-72 bg-white dark:bg-brand-black border-r border-gray-100 dark:border-white/5 flex flex-col">
-      <div class="p-6 mb-4">
-        <div class="flex items-center gap-4">
-          <div class="w-10 h-10 bg-brand-orange rounded-xl flex items-center justify-center">
-            <UIcon name="i-heroicons-cpu-chip" class="text-black text-xl" />
+  <div class="flex h-screen bg-[#f5f5f5]">
+    <!-- Sidebar -->
+    <aside class="w-80 bg-white border-r border-[#e5e5e5] flex flex-col shadow-sm">
+      <!-- Logo & Brand -->
+      <div class="p-6 border-b border-[#e5e5e5]">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-white border border-[#e5e5e5] flex items-center justify-center">
+            <img src="/favicon.svg" alt="PCM Logo" class="w-8 h-8" />
           </div>
-          <span class="text-2xl font-black text-black dark:text-white tracking-tighter">
-            <span class="text-brand-orange">PCM</span>
-          </span>
+          <div class="flex-1">
+            <h1 class="text-sm font-bold text-[#E57000] uppercase tracking-wide leading-tight">Proxmox Center Manager</h1>
+          </div>
         </div>
       </div>
 
-      <nav class="flex-1 px-4 py-4 space-y-8">
+      <!-- Navigation -->
+      <nav class="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
+        <!-- Infrastructure Section -->
         <div class="space-y-1">
-          <div class="px-4 mb-4">
-            <p class="text-[8px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.4em]">
-              Control Plane
+          <div class="px-3 mb-3 flex items-center gap-2">
+            <div class="w-1 h-4 bg-[#E57000] rounded-full"></div>
+            <p class="text-[10px] font-bold text-[#000000] uppercase tracking-wider">
+              Infraestrutura
             </p>
           </div>
           
-          <UButton 
+          <NuxtLink 
             to="/dashboard" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path === '/dashboard' }"
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path === '/dashboard' 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
           >
-            <UIcon name="i-heroicons-squares-2x2" class="mr-3" />
-            Dashboard
-          </UButton>
+            <UIcon name="i-heroicons-squares-2x2" class="text-lg text-[#E57000]" 
+                   :class="$route.path === '/dashboard' ? 'text-white' : 'text-[#E57000]'" />
+            <span>Dashboard</span>
+          </NuxtLink>
           
-          <UButton 
+          <NuxtLink 
             to="/dashboard/clusters" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path.startsWith('/dashboard/clusters') }"
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path.startsWith('/dashboard/clusters') 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
           >
-            <UIcon name="i-heroicons-server" class="mr-3" />
-            Clusters
-          </UButton>
+            <UIcon name="i-heroicons-server" class="text-lg" 
+                   :class="$route.path.startsWith('/dashboard/clusters') ? 'text-white' : 'text-[#E57000]'" />
+            <span>Clusters</span>
+          </NuxtLink>
           
-          <UButton 
+          <NuxtLink 
             to="/dashboard/tenants" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path.startsWith('/dashboard/tenants') }"
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path.startsWith('/dashboard/tenants') 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
           >
-            <UIcon name="i-heroicons-building-office" class="mr-3" />
-            Tenants
-          </UButton>
-          
-          <UButton 
-            to="/dashboard/compute" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path.startsWith('/dashboard/compute') }"
-          >
-            <UIcon name="i-heroicons-cube" class="mr-3" />
-            Compute
-          </UButton>
-          
-          <UButton 
-            to="/dashboard/storage" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path.startsWith('/dashboard/storage') }"
-          >
-            <UIcon name="i-heroicons-circle-stack" class="mr-3" />
-            Storage
-          </UButton>
-          
-          <UButton 
-            to="/dashboard/network" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path.startsWith('/dashboard/network') }"
-          >
-            <UIcon name="i-heroicons-globe-alt" class="mr-3" />
-            Network
-          </UButton>
+            <UIcon name="i-heroicons-building-office" class="text-lg" 
+                   :class="$route.path.startsWith('/dashboard/tenants') ? 'text-white' : 'text-[#E57000]'" />
+            <span>Tenants</span>
+          </NuxtLink>
         </div>
 
+        <!-- Resources Section -->
         <div class="space-y-1">
-          <div class="px-4 mb-4">
-            <p class="text-[8px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.4em]">
+          <div class="px-3 mb-3 flex items-center gap-2">
+            <div class="w-1 h-4 bg-[#E57000] rounded-full"></div>
+            <p class="text-[10px] font-bold text-[#000000] uppercase tracking-wider">
+              Recursos
+            </p>
+          </div>
+          
+          <NuxtLink 
+            to="/dashboard/compute" 
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path.startsWith('/dashboard/compute') 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
+          >
+            <UIcon name="i-heroicons-cube" class="text-lg" 
+                   :class="$route.path.startsWith('/dashboard/compute') ? 'text-white' : 'text-[#E57000]'" />
+            <span>Compute</span>
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/dashboard/storage" 
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path.startsWith('/dashboard/storage') 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
+          >
+            <UIcon name="i-heroicons-circle-stack" class="text-lg" 
+                   :class="$route.path.startsWith('/dashboard/storage') ? 'text-white' : 'text-[#E57000]'" />
+            <span>Storage</span>
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/dashboard/network" 
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path.startsWith('/dashboard/network') 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
+          >
+            <UIcon name="i-heroicons-globe-alt" class="text-lg" 
+                   :class="$route.path.startsWith('/dashboard/network') ? 'text-white' : 'text-[#E57000]'" />
+            <span>Network</span>
+          </NuxtLink>
+        </div>
+
+        <!-- System Section -->
+        <div class="space-y-1">
+          <div class="px-3 mb-3 flex items-center gap-2">
+            <div class="w-1 h-4 bg-[#E57000] rounded-full"></div>
+            <p class="text-[10px] font-bold text-[#000000] uppercase tracking-wider">
               Sistema
             </p>
           </div>
           
-          <UButton 
+          <NuxtLink 
             to="/dashboard/users" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path.startsWith('/dashboard/users') }"
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path.startsWith('/dashboard/users') 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
           >
-            <UIcon name="i-heroicons-users" class="mr-3" />
-            Usuários
-          </UButton>
+            <UIcon name="i-heroicons-users" class="text-lg" 
+                   :class="$route.path.startsWith('/dashboard/users') ? 'text-white' : 'text-[#E57000]'" />
+            <span>Usuários</span>
+          </NuxtLink>
           
-          <UButton 
+          <NuxtLink 
             to="/dashboard/settings" 
-            variant="ghost" 
-            class="w-full justify-start"
-            :class="{ 'bg-brand-orange/10 text-brand-orange': $route.path.startsWith('/dashboard/settings') }"
+            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium"
+            :class="$route.path.startsWith('/dashboard/settings') 
+              ? 'bg-[#E57000] text-white' 
+              : 'text-[#333333] hover:bg-[#f5f5f5]'"
           >
-            <UIcon name="i-heroicons-cog-6-tooth" class="mr-3" />
-            Configurações
-          </UButton>
+            <UIcon name="i-heroicons-cog-6-tooth" class="text-lg" 
+                   :class="$route.path.startsWith('/dashboard/settings') ? 'text-white' : 'text-[#E57000]'" />
+            <span>Configurações</span>
+          </NuxtLink>
         </div>
       </nav>
 
-      <div class="p-4 border-t border-gray-100 dark:border-white/5">
-        <div class="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 dark:bg-white/5">
-          <div class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-black font-black text-[10px]">
+      <!-- User Profile -->
+      <div class="p-4 border-t border-[#e5e5e5] bg-[#fafafa]">
+        <div class="flex items-center gap-3 p-3 rounded-lg bg-white border border-[#e5e5e5]">
+          <div class="w-10 h-10 rounded-lg bg-[#E57000] flex items-center justify-center text-white font-bold text-sm">
             PA
           </div>
-          <div class="flex-1">
-            <p class="text-[10px] font-black text-black dark:text-white uppercase">Provider Admin</p>
-            <p class="text-[8px] text-gray-400 uppercase">Master Account</p>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-[#000000] truncate">Provider Admin</p>
+            <p class="text-[10px] text-[#666666] truncate">admin@pcm.local</p>
           </div>
         </div>
       </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-brand-black">
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-[#f5f5f5]">
       <slot />
     </main>
   </div>

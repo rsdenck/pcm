@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    /* Cores oficiais Proxmox */
+    --proxmox-orange: #E57000;
+    --proxmox-orange-light: #FF8C00;
+    --proxmox-orange-dark: #CC6600;
+    
+    /* Fundos */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #fafafa;
+    
+    /* Textos */
+    --text-primary: #000000;
+    --text-secondary: #333333;
+    --text-tertiary: #666666;
+    --text-muted: #999999;
+    
+    /* Bordas */
+    --border-light: #e5e5e5;
+    --border-medium: #d4d4d4;
+    --border-dark: #a3a3a3;
+  }
+  
+  body {
+    @apply font-sans antialiased bg-white text-black;
+  }
+}
+
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
@@ -10,10 +39,20 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-}
-
-@layer base {
-  body {
-    @apply font-sans antialiased;
+  
+  .text-proxmox-orange {
+    color: var(--proxmox-orange);
+  }
+  
+  .bg-proxmox-orange {
+    background-color: var(--proxmox-orange);
+  }
+  
+  .border-proxmox-orange {
+    border-color: var(--proxmox-orange);
+  }
+  
+  .hover\:bg-proxmox-orange:hover {
+    background-color: var(--proxmox-orange);
   }
 }

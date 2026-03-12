@@ -5,6 +5,11 @@ export default defineNuxtConfig({
   
   css: ['~/assets/css/main.css'],
   
+  colorMode: {
+    preference: 'light',
+    fallback: 'light'
+  },
+  
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://192.168.130.10:8000/api/v1'
