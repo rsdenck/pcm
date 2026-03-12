@@ -83,7 +83,7 @@ This implementation plan creates a comprehensive Backup-as-a-Service module for 
     - **Property 4: Server health status consistency**
     - **Validates: Requirements 1.3, 1.4**
 
-  - [ ] 5.4 Write unit tests for PBS server management
+  - [x] 5.4 Write unit tests for PBS server management
     - Test server registration and validation
     - Test health monitoring and status updates
     - Test datastore management operations
