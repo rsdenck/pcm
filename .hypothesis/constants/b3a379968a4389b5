@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\backup\snapshot.py
+# hypothesis_version: 6.151.9
+
+[128, 255, 1000, 'BackupJob', 'CASCADE', 'Datastore', 'Tenant', 'backup_jobs.id', 'backup_snapshots', 'datastores.id', 'encryption_enabled', 'failed', 'full', 'has_errors', 'id', 'is_protected', 'pending', 'skipped', 'snapshot_type', 'snapshots', 'tenants.id', 'verification_status', 'verified']

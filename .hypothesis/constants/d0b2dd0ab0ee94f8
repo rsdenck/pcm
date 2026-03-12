@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\tenant.py
+# hypothesis_version: 6.151.9
+
+[255, 'ProxmoxCluster', 'User', 'VirtualMachine', 'all, delete-orphan', 'tenant', 'tenants']

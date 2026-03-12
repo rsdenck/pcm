@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\services\backup\pbs_server_manager.py
+# hypothesis_version: 6.151.9
+
+[100, 8007, 'Health check failed', 'active', 'avail', 'datacenter', 'datastores', 'error', 'error_count', 'healthy', 'is_healthy', 'last_health_check', 'server_id', 'server_name', 'status', 'store', 'timestamp', 'total', 'total_capacity', 'uptime_days', 'usage_percentage', 'used', 'used_capacity', 'version']

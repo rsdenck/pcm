@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\backup\job.py
+# hypothesis_version: 6.151.9
+
+['BackupPolicy', 'BackupSnapshot', 'CASCADE', 'Tenant', 'all, delete-orphan', 'backup_jobs', 'backup_policies.id', 'cancelled', 'completed', 'failed', 'id', 'job', 'pending', 'progress', 'retry_count', 'running', 'status', 'tenants.id']

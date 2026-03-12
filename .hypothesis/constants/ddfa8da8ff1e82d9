@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\backup\policy.py
+# hypothesis_version: 6.151.9
+
+[0.0, 100, 255, 'BackupJob', 'CASCADE', 'Tenant', '^[0-9\\*\\-\\,\\/\\s]+$', 'active', 'additionalProperties', 'all, delete-orphan', 'array', 'backup_policies', 'bandwidth_limit', 'boolean', 'cluster_id', 'compression', 'cron', 'daily', 'datastore_id', 'default', 'description', 'enabled', 'encryption', 'enum', 'error', 'error_count', 'failure_count', 'id', 'inactive', 'integer', 'items', 'job_count', 'lz4', 'max_concurrent_jobs', 'maximum', 'minItems', 'minLength', 'minProperties', 'minimum', 'monthly', 'none', 'object', 'options', 'pattern', 'policy', 'properties', 'required', 'retention', 'schedule', 'status', 'string', 'success_count', 'suspended', 'targets', 'tenants.id', 'timezone', 'type', 'verification', 'vm_id', 'weekly', 'yearly', 'zstd']

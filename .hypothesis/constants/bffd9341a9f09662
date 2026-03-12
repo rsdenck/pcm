@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\backup\pbs_server.py
+# hypothesis_version: 6.151.9
+
+[255, 300, 8007, 'Datastore', 'all, delete-orphan', 'degraded', 'error', 'http', 'https', 'maintenance', 'offline', 'online', 'pbs_server', 'pbs_servers']

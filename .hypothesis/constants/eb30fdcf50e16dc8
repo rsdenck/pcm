@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\backup\__init__.py
+# hypothesis_version: 6.151.9
+
+['BACKUP_POLICY_SCHEMA', 'BackupJob', 'BackupPolicy', 'BackupSnapshot', 'Datastore', 'DatastoreStatus', 'JobStatus', 'PBSServer', 'PolicyStatus', 'ServerStatus', 'VerificationStatus']

@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\backup\datastore.py
+# hypothesis_version: 6.151.9
+
+[100, 255, 500, 3600, 'BackupSnapshot', 'CASCADE', 'PBSServer', 'Tenant', 'active', 'all, delete-orphan', 'backup_count', 'compression_enabled', 'created_at', 'critical_threshold', 'datastore', 'datastores', 'error', 'error_count', 'full', 'id', 'inactive', 'is_encrypted', 'maintenance', 'pbs_servers.id', 'status', 'tenants.id', 'updated_at', 'warning_threshold']

@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\services\backup\health_monitor.py
+# hypothesis_version: 6.151.9
+
+[100, 'No servers to check', 'Unknown error', 'check_interval', 'error', 'failed', 'failed_checks', 'health_percentage', 'health_summary', 'healthy', 'healthy_servers', 'last_check_time', 'results', 'running', 'server_id', 'server_name', 'server_status_counts', 'servers_with_errors', 'service_status', 'status', 'stopped', 'successful', 'successful_checks', 'summary', 'timestamp', 'total_servers', 'unhealthy_servers']

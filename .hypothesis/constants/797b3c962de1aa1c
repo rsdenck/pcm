@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\cluster.py
+# hypothesis_version: 6.151.9
+
+[255, 8006, 'CASCADE', 'ProxmoxCluster', 'ProxmoxNode', 'Storage', 'Tenant', 'VirtualMachine', 'all, delete-orphan', 'cluster', 'clusters', 'degraded', 'maintenance', 'node', 'nodes', 'offline', 'online', 'pbs', 'pmg', 'proxmox_clusters', 'proxmox_clusters.id', 'proxmox_nodes', 'pve', 'tenants.id', 'unknown']

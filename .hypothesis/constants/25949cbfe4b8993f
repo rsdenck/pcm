@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\storage.py
+# hypothesis_version: 6.151.9
+
+[255, 'CASCADE', 'ProxmoxCluster', 'available', 'ceph', 'cifs', 'dir', 'lvm', 'lvmthin', 'nfs', 'proxmox_clusters.id', 'storage', 'unavailable', 'unknown', 'zfs']

@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\config.py
+# hypothesis_version: 6.151.9
+
+[1440, 8000, 9090, '.env', '0.0.0.0', '1.0.0', 'HS256', 'INFO', 'PCM', 'development', 'ignore', 'json', 'utf-8']

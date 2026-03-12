@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\user.py
+# hypothesis_version: 6.151.9
+
+[100, 255, 'CASCADE', 'Tenant', 'provider_admin', 'tenant_admin', 'tenant_user', 'tenants.id', 'users']

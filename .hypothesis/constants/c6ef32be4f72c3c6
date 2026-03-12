@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\vm.py
+# hypothesis_version: 6.151.9
+
+[255, 'CASCADE', 'ProxmoxNode', 'Tenant', 'lxc', 'paused', 'proxmox_nodes.id', 'qemu', 'running', 'stopped', 'suspended', 'tenants.id', 'unknown', 'virtual_machines', 'vms']

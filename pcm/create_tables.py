@@ -50,6 +50,8 @@ async def create_tables():
         print("  - proxmox_nodes")
         print("  - virtual_machines")
         print("  - storage_pools")
+        print("  - pbs_servers")
+        print("  - datastores")
         print()
         
         await engine.dispose()

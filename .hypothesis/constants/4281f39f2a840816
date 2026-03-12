@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\services\backup\pbs_client.py
+# hypothesis_version: 6.151.9
+
+[400, 401, 'Authorization', 'Content-Type', 'DELETE', 'GET', 'POST', 'admin/datastore', 'application/json', 'config/datastore', 'data', 'datastores', 'error', 'healthy', 'name', 'path', 'status', 'timestamp', 'version']
