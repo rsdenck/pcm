@@ -53,7 +53,7 @@ This implementation plan creates a comprehensive Backup-as-a-Service module for 
     - Add JSON schema validation against backup policy schema
     - _Requirements: 19.1, 19.2, 19.3, 19.5_
 
-  - [-] 3.2 Write property test for configuration round-trip
+  - [x] 3.2 Write property test for configuration round-trip
     - **Property 3: Configuration parsing and serialization consistency**
     - **Validates: Requirements 19.4**
 
