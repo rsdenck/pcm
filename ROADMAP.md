@@ -1,696 +1,649 @@
-# ROADMAP.md
+<div align="center">
 
-# PCM — Proxmox Center Manager
-Cloud Control Plane for Proxmox Infrastructure
+<img src="https://raw.githubusercontent.com/rsdenck/pcm/main/assets/pcm-logo.png" alt="PCM Logo" width="800"/>
 
-Version: 0.1  
-Status: Architecture Definition
+<table>
+<tr>
+<td align="center" width="100%">
 
----------------------------------------------------------------------
+# PCM – Roadmap & Architecture
 
-# 1. INTRODUÇÃO
+**Plano de Desenvolvimento e Arquitetura da Plataforma**
+
+_"Transformando Proxmox em uma plataforma cloud completa."_
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td align="center">
+
+[![Version](https://img.shields.io/badge/Version-0.1.0-000000?style=for-the-badge&logo=git&logoColor=ff7a00)](https://github.com/rsdenck/pcm)
+[![Status](https://img.shields.io/badge/Status-Fase_2_Em_Andamento-000000?style=for-the-badge&logo=rocket&logoColor=ff7a00)](https://github.com/rsdenck/pcm)
+[![Architecture](https://img.shields.io/badge/Architecture-Microserviços-000000?style=for-the-badge&logo=kubernetes&logoColor=ff7a00)](https://github.com/rsdenck/pcm)
+[![License](https://img.shields.io/badge/License-MIT-000000?style=for-the-badge&logo=opensourceinitiative&logoColor=ff7a00)](LICENSE)
+
+</td>
+</tr>
+</table>
+
+</div>
+
+---
+
+## 🎯 Introdução
+
+<div align="center">
+
+![Cloud Control Plane](https://img.shields.io/badge/-Cloud_Control_Plane-000000?style=for-the-badge&logo=cloud&logoColor=ff7a00)
+
+</div>
 
 PCM (Proxmox Center Manager) é uma plataforma de **Control Plane Cloud** projetada para gerenciar grandes ambientes baseados em Proxmox.
 
 O objetivo do PCM é transformar clusters do Proxmox em uma **infraestrutura cloud multi-tenant**, semelhante ao que plataformas como VMware vCloud Director, Apache CloudStack e OpenStack fazem.
 
-O PCM atua como uma camada superior de orquestração e gerenciamento, permitindo:
-
-- Multi-tenancy real
-- Orquestração de recursos
-- Observabilidade completa
-- Balanceamento automático
-- Gestão multi-datacenter
-- Automação de infraestrutura
-- Scheduler inteligente
-- Catálogo de serviços
-- Integração com Ceph
-- Integração com Proxmox SDN
-- Billing baseado em uso
-
-Arquitetura conceitual:
+<div align="center">
 
 ```
-Users
-│
-▼
-PCM (Control Plane)
-│
-▼
-Proxmox Clusters (Compute Plane)
+┌─────────────────────────────────────────────────────────────┐
+│                    USERS & TENANTS                          │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 PCM CONTROL PLANE                           │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
+│  │   API    │  │Scheduler │  │ Resource │  │Observ.   │     │
+│  │ Gateway  │  │  Engine  │  │ Manager  │  │  Stack   │     │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                PROXMOX COMPUTE PLANE                        │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
+│  │Cluster 1 │  │Cluster 2 │  │Cluster 3 │  │Cluster N │     │
+│  │ PVE/PBS  │  │ PVE/PBS  │  │ PVE/PBS  │  │ PVE/PBS  │     │
+│  │   PMG    │  │   PMG    │  │   PMG    │  │   PMG    │     │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
----------------------------------------------------------------------
+</div>
 
-# 2. OBJETIVO DO PCM
+### Capacidades Principais
 
-Resolver limitações atuais do Proxmox:
+<div align="center">
 
-- ausência de control plane cloud
-- ausência de multi-tenant avançado
-- falta de scheduler inteligente
-- falta de observabilidade unificada
-- ausência de billing
-- ausência de gestão multi datacenter
+<table>
+<tr>
+<td valign="top" width="50%">
 
-O PCM adiciona uma camada que permite:
+![Multi-Tenant](https://img.shields.io/badge/-Multi--Tenancy_Real-000000?style=for-the-badge&logo=users&logoColor=ff7a00)
 
-- orquestração global
-- governança de infraestrutura
-- automação cloud-native
+Isolamento completo de tenants com controle de acesso baseado em funções (RBAC).
 
----------------------------------------------------------------------
+![Orchestration](https://img.shields.io/badge/-Orquestração_Global-000000?style=for-the-badge&logo=kubernetes&logoColor=ff7a00)
 
-# 3. STACK TECNOLÓGICA
+Orquestração de recursos distribuídos em múltiplos clusters e datacenters.
 
-## Backend
-- Python 3.12+
-- FastAPI
-- Pydantic
-- SQLAlchemy 2
+![Automation](https://img.shields.io/badge/-Automação_Completa-000000?style=for-the-badge&logo=robot&logoColor=ff7a00)
 
-## Database
-- PostgreSQL 18
+Automação de infraestrutura com workflows inteligentes e scheduler avançado.
 
-## Message Queue
-- Redis ou NATS
+</td>
+<td valign="top" width="50%">
 
-## Workers
-- Celery
+![Observability](https://img.shields.io/badge/-Observabilidade_Unificada-000000?style=for-the-badge&logo=grafana&logoColor=ff7a00)
 
-## Observabilidade
-- OpenTelemetry
+Agregação de métricas, traces e logs baseada em OpenTelemetry.
 
-## Frontend
-- Nuxt Framework
-- Nuxt UI
-- Vue
-- Tailwind CSS
+![Multi-DC](https://img.shields.io/badge/-Multi--Datacenter-000000?style=for-the-badge&logo=server&logoColor=ff7a00)
 
-## Billing
-- Lago
+Gestão multi-datacenter com failover automático e geo-distribuição.
 
-## Infraestrutura
-- Proxmox VE
-- Ceph Storage
-- Proxmox SDN
+![Billing](https://img.shields.io/badge/-Billing_Inteligente-000000?style=for-the-badge&logo=creditcard&logoColor=ff7a00)
 
----------------------------------------------------------------------
+Sistema de billing baseado em uso real com integração Lago.
 
-# 4. MODELO DE ARQUITETURA
+</td>
+</tr>
+</table>
 
-O PCM separa dois planos fundamentais:
+</div>
 
-- CONTROL PLANE
-- Compute Plane
+---
 
-Arquitetura geral:
+## 🎯 Objetivo do PCM
 
-```
-USERS
-│
-▼
-PCM UI
-(Nuxt + Tailwind)
-│
-▼
-PCM API
-│
-┌────────────┼────────────┐
-│            │            │
-Scheduler   Observability   Automation
-│            │            │
-└────────────┼────────────┘
-│
-Resource Manager
-│
-Proxmox API
-│
-Proxmox Clusters
-(Compute Plane)
-```
+<div align="center">
 
----------------------------------------------------------------------
+### Problemas Resolvidos
 
-# 5. COMPONENTES PRINCIPAIS
+<table>
+<tr>
+<td valign="top" width="50%">
 
-## PCM API
+### Limitações Atuais do Proxmox
 
-Interface central da plataforma.
+![Problem](https://img.shields.io/badge/-Ausência_Control_Plane-000000?style=flat-square&logo=x&logoColor=ff0000)
 
-Responsável por:
-- autenticação
-- gerenciamento de tenants
-- gerenciamento de clusters
-- orquestração de recursos
+Falta de camada de orquestração cloud nativa
 
----------------------------------------------------------------------
+![Problem](https://img.shields.io/badge/-Multi--Tenant_Limitado-000000?style=flat-square&logo=x&logoColor=ff0000)
 
-## Scheduler
+Isolamento básico sem governança avançada
 
-Responsável por escolher onde executar workloads.
+![Problem](https://img.shields.io/badge/-Scheduler_Simples-000000?style=flat-square&logo=x&logoColor=ff0000)
 
-Critérios:
-- cpu load
-- ram disponível
-- latência de storage
-- latência de rede
-- afinidade de tenant
-- anti-affinity
+Ausência de scheduler inteligente para workloads
 
-Fluxo:
-```
-User
-→ PCM API
-→ Scheduler
-→ Node escolhido
-→ Proxmox API
-```
+![Problem](https://img.shields.io/badge/-Observabilidade_Fragmentada-000000?style=flat-square&logo=x&logoColor=ff0000)
 
----------------------------------------------------------------------
+Métricas e logs não unificados
 
-## Resource Manager
+</td>
+<td valign="top" width="50%">
 
-Cérebro da plataforma.
+### Soluções do PCM
 
-Responsável por:
-- ciclo de vida de recursos
-- validação de quotas
-- execução de workflows
-- orquestração de serviços
+![Solution](https://img.shields.io/badge/-Control_Plane_Enterprise-000000?style=flat-square&logo=checkmarx&logoColor=00ff00)
 
-Recursos gerenciados:
-- VMs
-- Volumes
-- Snapshots
-- Networks
-- Floating IPs
-- Templates
+Orquestração global com governança completa
 
----------------------------------------------------------------------
+![Solution](https://img.shields.io/badge/-Multi--Tenancy_Avançado-000000?style=flat-square&logo=checkmarx&logoColor=00ff00)
 
-## Observability Service
+Isolamento completo com RBAC granular
 
-Baseado em OpenTelemetry.
+![Solution](https://img.shields.io/badge/-Scheduler_Inteligente-000000?style=flat-square&logo=checkmarx&logoColor=00ff00)
 
-Coleta:
-- vm cpu
-- vm ram
-- disk io
-- network throughput
-- ceph usage
-- node health
-- cluster status
+Alocação automática baseada em ML e métricas
 
-Pipeline:
-```
-Proxmox Nodes
-↓
-OTEL Agents
-↓
-OTEL Collector
-↓
-PCM Telemetry
-```
+![Solution](https://img.shields.io/badge/-Observabilidade_Unificada-000000?style=flat-square&logo=checkmarx&logoColor=00ff00)
 
-Permite:
-- capacity planning
-- anomaly detection
-- alerting
+Stack completo com OpenTelemetry
 
----------------------------------------------------------------------
+</td>
+</tr>
+</table>
 
-## Automation Engine
+</div>
 
-Executa workflows automatizados.
+---
 
-Exemplos:
-- create_vm
-- resize_disk
-- snapshot
-- migration
+## 🛠️ Stack Tecnológica
 
-Todas operações são executadas como **tasks assíncronas**.
+<div align="center">
 
----------------------------------------------------------------------
+<table>
+<tr>
+<td valign="top" width="50%">
 
-## Patch Manager
+### Stack Backend
 
-Responsável por atualização automatizada de nodes.
+![Python](https://img.shields.io/badge/Python_3.12+-000000?style=for-the-badge&logo=python&logoColor=ff7a00)
+![FastAPI](https://img.shields.io/badge/FastAPI-000000?style=for-the-badge&logo=fastapi&logoColor=ff7a00)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy_2-000000?style=for-the-badge&logo=python&logoColor=ff7a00)
+![Pydantic](https://img.shields.io/badge/Pydantic-000000?style=for-the-badge&logo=python&logoColor=ff7a00)
+![Celery](https://img.shields.io/badge/Celery-000000?style=for-the-badge&logo=celery&logoColor=ff7a00)
+![AsyncIO](https://img.shields.io/badge/AsyncIO-000000?style=for-the-badge&logo=python&logoColor=ff7a00)
 
-Workflow:
-1. drain node
-2. migrate VMs
-3. apply updates
-4. reboot node
-5. restore node
+**Observabilidade**
 
-Permite atualizações sem downtime.
+![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-000000?style=for-the-badge&logo=opentelemetry&logoColor=ff7a00)
+![Prometheus](https://img.shields.io/badge/Prometheus-000000?style=for-the-badge&logo=prometheus&logoColor=ff7a00)
 
----------------------------------------------------------------------
+</td>
+<td valign="top" width="50%">
 
-# 6. MODELO MULTI-TENANT
+### Stack Frontend
 
-Hierarquia principal:
+![Nuxt](https://img.shields.io/badge/Nuxt_3-000000?style=for-the-badge&logo=nuxt.js&logoColor=ff7a00)
+![Vue](https://img.shields.io/badge/Vue_3-000000?style=for-the-badge&logo=vue.js&logoColor=ff7a00)
+![Nuxt_UI](https://img.shields.io/badge/Nuxt_UI-000000?style=for-the-badge&logo=nuxt.js&logoColor=ff7a00)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-000000?style=for-the-badge&logo=tailwindcss&logoColor=ff7a00)
+![TypeScript](https://img.shields.io/badge/TypeScript-000000?style=for-the-badge&logo=typescript&logoColor=ff7a00)
+
+**Infraestrutura**
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_18-000000?style=for-the-badge&logo=postgresql&logoColor=ff7a00)
+![Redis](https://img.shields.io/badge/Redis_7-000000?style=for-the-badge&logo=redis&logoColor=ff7a00)
+![Lago](https://img.shields.io/badge/Lago_Billing-000000?style=for-the-badge&logo=creditcard&logoColor=ff7a00)
+
+</td>
+</tr>
+</table>
+
+</div>
+
+---
+
+## 🏗️ Arquitetura de Microserviços
+
+<div align="center">
+
+### Design de Separação de Planos
+
+| Plano | Responsabilidade | Tecnologia |
+|-------|------------------|------------|
+| ![Control Plane](https://img.shields.io/badge/-Control_Plane-000000?style=flat-square&logo=kubernetes&logoColor=ff7a00) | Orquestração, Governança, APIs | PCM Stack |
+| ![Compute Plane](https://img.shields.io/badge/-Compute_Plane-000000?style=flat-square&logo=server&logoColor=ff7a00) | Execução de Workloads | Proxmox VE |
+
+</div>
+
+### Arquitetura Geral
+
+<div align="center">
 
 ```
-Provider
-├── Tenants
-│       ├── Projects
-│       ├── Users
-│       └── Quotas
-│
-└── Infrastructure
-    ├── Proxmox Clusters
-    ├── Nodes
-    ├── Ceph Storage
-    └── SDN
+┌─────────────────────────────────────────────────────────────┐
+│                      USERS                                  │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   PCM UI                                    │
+│              (Nuxt + Tailwind)                              │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   PCM API                                   │
+└─────┬─────────────┬─────────────┬─────────────┬─────────────┘
+      ▼             ▼             ▼             ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│Scheduler │ │Observ.   │ │Automation│ │ Resource │
+│  Engine  │ │  Stack   │ │  Engine  │ │ Manager  │
+└─────┬────┘ └─────┬────┘ └─────┬────┘ └─────┬────┘
+      └─────────────┼─────────────┼─────────────┘
+                    ▼             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 Proxmox API                                 │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Proxmox Clusters                               │
+│                (Compute Plane)                              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
----------------------------------------------------------------------
+</div>
 
-# 7. TENANTS
+### Microserviços PCM
 
-Representam organizações ou empresas.
+<div align="center">
 
-Propriedades:
-- tenant_name
-- tenant_id
-- cpu_quota
-- ram_quota
-- storage_quota
-- network_quota
-- billing_account
-
-Configurações adicionais:
-- allowed_templates
-- allowed_regions
-- allowed_storage_classes
-
----------------------------------------------------------------------
-
-# 8. PROJECTS (Virtual Datacenters)
+| Serviço | Propósito | Tecnologia | Status |
+|---------|-----------|------------|--------|
+| ![API](https://img.shields.io/badge/-API_Gateway-000000?style=flat-square&logo=fastapi&logoColor=ff7a00) | API Principal & WebSocket | FastAPI | ✅ |
+| ![Auth](https://img.shields.io/badge/-Auth_Service-000000?style=flat-square&logo=shield&logoColor=ff7a00) | Autenticação & RBAC | FastAPI | ✅ |
+| ![Tenant](https://img.shields.io/badge/-Tenant_Manager-000000?style=flat-square&logo=users&logoColor=ff7a00) | Multi-tenancy | FastAPI | ✅ |
+| ![Scheduler](https://img.shields.io/badge/-Scheduler-000000?style=flat-square&logo=clockify&logoColor=ff7a00) | Agendamento Inteligente | Celery Beat | ⏳ |
+| ![Resource](https://img.shields.io/badge/-Resource_Manager-000000?style=flat-square&logo=server&logoColor=ff7a00) | Operações VM/Container | AsyncIO | ⏳ |
+| ![Storage](https://img.shields.io/badge/-Storage_Manager-000000?style=flat-square&logo=database&logoColor=ff7a00) | Operações de Storage | Ceph API | ⏳ |
+| ![Network](https://img.shields.io/badge/-Network_Manager-000000?style=flat-square&logo=cisco&logoColor=ff7a00) | Gerenciamento SDN | Proxmox SDN | ⏳ |
+| ![Backup](https://img.shields.io/badge/-Backup_Manager-000000?style=flat-square&logo=shield&logoColor=ff7a00) | Backup & Recovery | PBS API | ✅ |
+| ![Telemetry](https://img.shields.io/badge/-Telemetry-000000?style=flat-square&logo=grafana&logoColor=ff7a00) | Coleta de Métricas | OTEL | ⏳ |
 
-Cada tenant pode possuir múltiplos projetos.
+</div>
 
-Exemplo:
-```
-Tenant: EmpresaX
-Projects
-  - Production
-  - Development
-  - Testing
-```
-
-Cada project define quotas próprias:
-- cpu quota
-- ram quota
-- storage quota
-- network quota
+---
 
----------------------------------------------------------------------
 
-# 9. USERS
 
-Usuários pertencem a tenants.
+## 🚀 Roadmap de Desenvolvimento
 
-Campos:
-- username
-- email
-- password
-- roles
-- 2FA
-- api_tokens
-- ssh_keys
+<div align="center">
 
----------------------------------------------------------------------
-
-# 10. RBAC
-
-Controle de acesso baseado em roles.
-
-Roles:
-- provider_admin
-- tenant_admin
-- project_admin
-- developer
-- viewer
+### Status Atual: **Fase 2 - Infrastructure Integration** ⏳
 
-Permissões:
-- create_vm
-- delete_vm
-- manage_network
-- view_metrics
-- create_snapshot
-
-Modelo:
-```
-Role
-└ permissions
-
-User
-└ role
+![Progress](https://img.shields.io/badge/Progresso_Geral-65%25-000000?style=for-the-badge&logo=rocket&logoColor=ff7a00)
 
-Role
-└ scope
-```
+</div>
 
-Scopes:
-- global
-- tenant
-- project
-- resource
-
----------------------------------------------------------------------
+### Fase 1 — Core Platform ✅ **CONCLUÍDO**
 
-# 11. CATÁLOGO
-
-Catálogo de serviços.
-
-Contém:
-- VM Templates
-- Container Images
-- OS Images
-
-També pode definir:
-
-Instance Types
-- small
-  - 2 CPU
-  - 4 GB RAM
-- medium
-  - 4 CPU
-  - 8 GB RAM
-- large
-  - 8 CPU
-  - 16 GB RAM
-
----------------------------------------------------------------------
-
-# 12. QUOTAS
-
-Sistema essencial para multi-tenant.
-
-Tipos:
-- cpu quota
-- ram quota
-- vm limit
-- disk quota
-- network quota
-
-Aplicação:
-- Tenant
-- Project
+<div align="center">
 
----------------------------------------------------------------------
+<table>
+<tr>
+<td valign="top" width="50%">
 
-# 13. TASK SYSTEM
+#### Backend Core ✅
 
-Todas operações são assíncronas.
+![API](https://img.shields.io/badge/-API_FastAPI-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
 
-Exemplos:
-- create vm
-- resize disk
-- snapshot
-- migration
+![Auth](https://img.shields.io/badge/-Autenticação-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
 
-Modelo de task:
-- task_id
-- status
-- progress
-- logs
-- result
+![Tenant](https://img.shields.io/badge/-Tenant_Management-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
 
-Status possíveis:
-- pending
-- running
-- completed
-- failed
-
----------------------------------------------------------------------
-
-# 14. OBSERVABILIDADE
-
-Dados coletados:
-- vm cpu
-- vm ram
-- disk io
-- network throughput
-- ceph usage
-- node health
-
-Com suporte a:
-- metrics
-- logs
-- traces
-- alerts
-
-Tecnologia:
-- OpenTelemetry
-
----------------------------------------------------------------------
-
-# 15. MULTI DATACENTER
-
-Estrutura global:
-
-```
-Provider
-└ Regions
-  └ Datacenters
-    └ Clusters
-      └ Nodes
-```
-
-Exemplo:
-```
-Region: Brazil
-  - DC: SP1
-  - DC: RJ1
-```
-
-Permite:
-- failover
-- geo-distribution
-- global resource pools
-
----------------------------------------------------------------------
-
-# 16. GLOBAL RESOURCE POOL
-
-Todos clusters podem ser agregados.
-
-Exemplo:
-```
-Datacenter A
-  - Cluster A1
-  - Cluster A2
-
-Datacenter B
-  - Cluster B1
-```
-
-Para o usuário:
-```
-Global Cloud Pool
-```
-
-O scheduler decide onde executar.
-
----------------------------------------------------------------------
-
-# 17. BILLING
-
-Integração com Lago.
-
-Cobrança baseada em:
-- cpu hours
-- ram hours
-- storage usage
-- network traffic
-
----------------------------------------------------------------------
-
-# 18. BANCO DE DADOS
-
-Principais tabelas:
-
-- providers
-- regions
-- datacenters
-- clusters
-- nodes
-- tenants
-- projects
-- users
-- roles
-- permissions
-- vms
-- volumes
-- snapshots
-- images
-- templates
-- networks
-- floating_ips
-- storage_pools
-- instance_types
-- catalog_items
-- quotas
-- tasks
-- events
-- metrics
-- billing_usage
-
----------------------------------------------------------------------
-
-# 19. MICROSERVIÇOS
-
-Arquitetura baseada em serviços.
-
-- pcm-api
-- pcm-auth
-- pcm-tenant
-- pcm-scheduler
-- pcm-resource-manager
-- pcm-network
-- pcm-storage
-- pcm-telemetry
-- pcm-automation
-- pcm-patch
-- pcm-catalog
-
----------------------------------------------------------------------
-
-# 20. ROADMAP DE DESENVOLVIMENTO
-
-## Fase 1 — Core Platform ✅ (CONCLUÍDO)
-- ✅ API FastAPI
-- ✅ Auth
-- ✅ Tenant management
-- ✅ RBAC
-- ✅ Database schema
-- ✅ Frontend Nuxt + Nuxt UI
-- ✅ Dashboard principal
-
-## Fase 2 — Infrastructure Integration (EM ANDAMENTO)
-- ✅ integração Proxmox API
-- ✅ gestão de clusters
-- ✅ gestão de nodes
-- ✅ gestão de storage
-- ✅ módulo de backup (PBS integration)
-  - ✅ modelos de dados (PBS Server, Datastore, Policy, Job, Snapshot)
-  - ✅ testes property-based para validação
-  - ✅ testes unitários abrangentes (110+ casos)
-  - ✅ configuração e validação de políticas
-  - ✅ gerenciamento de servidores PBS
-  - ✅ monitoramento de saúde
-  - ✅ sistema de configuração round-trip
-
-## Fase 3 — Resource Management (PRÓXIMO)
-- ⏳ criação de VMs
-- ⏳ volumes
-- ⏳ snapshots
-- ⏳ networking
-
-## Fase 4 — Scheduler
-- ⏳ alocação automática
-- ⏳ balanceamento de carga
-- ⏳ migração automática
-
-## Fase 5 — Observability
-- ⏳ OTEL
-- ⏳ métricas
-- ⏳ dashboards
-
-## Fase 6 — Multi Datacenter
-- ⏳ regions
-- ⏳ datacenters
-- ⏳ resource pools
-
-## Fase 7 — Automation
-- ⏳ workflows
-- ⏳ tasks
-- ⏳ event system
-
-## Fase 8 — Billing
-- ⏳ integração Lago
-- ⏳ métricas de consumo
-
----------------------------------------------------------------------
-
-# 21. VISÃO FINAL
-
-PCM transforma o Proxmox em uma plataforma cloud completa.
-
-Arquitetura final:
+![RBAC](https://img.shields.io/badge/-RBAC-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Database](https://img.shields.io/badge/-Database_Schema-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+</td>
+<td valign="top" width="50%">
+
+#### Frontend Core ✅
+
+![Frontend](https://img.shields.io/badge/-Frontend_Nuxt_3-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![UI](https://img.shields.io/badge/-Nuxt_UI-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Dashboard](https://img.shields.io/badge/-Dashboard_Principal-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![CI/CD](https://img.shields.io/badge/-CI/CD_GitHub_Actions-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+</td>
+</tr>
+</table>
+
+</div>
+
+### Fase 2 — Infrastructure Integration ⏳ **EM ANDAMENTO**
+
+<div align="center">
+
+<table>
+<tr>
+<td valign="top" width="50%">
+
+#### Integração Proxmox ✅
+
+![Proxmox](https://img.shields.io/badge/-Integração_Proxmox_API-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Clusters](https://img.shields.io/badge/-Gestão_de_Clusters-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Nodes](https://img.shields.io/badge/-Gestão_de_Nodes-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Storage](https://img.shields.io/badge/-Gestão_de_Storage-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+</td>
+<td valign="top" width="50%">
+
+#### Módulo de Backup ✅
+
+![PBS](https://img.shields.io/badge/-PBS_Integration-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Models](https://img.shields.io/badge/-Modelos_de_Dados-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Tests](https://img.shields.io/badge/-Property_Tests-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Unit Tests](https://img.shields.io/badge/-110+_Unit_Tests-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Config](https://img.shields.io/badge/-Sistema_Configuração-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+![Health](https://img.shields.io/badge/-Monitoramento_Saúde-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) **Completo**
+
+</td>
+</tr>
+</table>
+
+</div>
+
+#### Próximas Tasks do Módulo de Backup ⏳
+
+<div align="center">
+
+| Task | Descrição | Status |
+|------|-----------|--------|
+| ![Task](https://img.shields.io/badge/-3.2-000000?style=flat-square&logo=code&logoColor=ff7a00) | Property test para configuration round-trip | ⏳ **PRÓXIMO** |
+| ![Task](https://img.shields.io/badge/-5.3-000000?style=flat-square&logo=code&logoColor=ff7a00) | Property test para PBS server health monitoring | ⏳ |
+| ![Task](https://img.shields.io/badge/-5.4-000000?style=flat-square&logo=code&logoColor=ff7a00) | Unit tests para PBS server management | ⏳ |
+| ![Task](https://img.shields.io/badge/-6.2-000000?style=flat-square&logo=code&logoColor=ff7a00) | Implementar backup job execution | ⏳ |
+| ![Task](https://img.shields.io/badge/-6.3-000000?style=flat-square&logo=code&logoColor=ff7a00) | Property test para backup scheduling | ⏳ |
+
+</div>
+
+### Fase 3 — Resource Management ⏳ **PRÓXIMO**
+
+<div align="center">
+
+<table>
+<tr>
+<td valign="top" width="50%">
+
+#### VM Management ⏳
+
+![VM Create](https://img.shields.io/badge/-Criação_de_VMs-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![VM Lifecycle](https://img.shields.io/badge/-Ciclo_de_Vida_VM-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Templates](https://img.shields.io/badge/-Templates-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+</td>
+<td valign="top" width="50%">
+
+#### Storage & Network ⏳
+
+![Volumes](https://img.shields.io/badge/-Volumes-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Snapshots](https://img.shields.io/badge/-Snapshots-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Networking](https://img.shields.io/badge/-Networking-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+</td>
+</tr>
+</table>
+
+</div>
+
+### Fase 4 — Scheduler ⏳
+
+<div align="center">
+
+![Scheduler](https://img.shields.io/badge/-Alocação_Automática-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Load Balancing](https://img.shields.io/badge/-Balanceamento_de_Carga-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Migration](https://img.shields.io/badge/-Migração_Automática-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+</div>
+
+### Fase 5 — Observability ⏳
+
+<div align="center">
+
+![OTEL](https://img.shields.io/badge/-OpenTelemetry-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Metrics](https://img.shields.io/badge/-Métricas-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Dashboards](https://img.shields.io/badge/-Dashboards-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+</div>
+
+### Fase 6 — Multi Datacenter ⏳
+
+<div align="center">
+
+![Regions](https://img.shields.io/badge/-Regions-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Datacenters](https://img.shields.io/badge/-Datacenters-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Resource Pools](https://img.shields.io/badge/-Resource_Pools-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+</div>
+
+### Fase 7 — Automation ⏳
+
+<div align="center">
+
+![Workflows](https://img.shields.io/badge/-Workflows-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Tasks](https://img.shields.io/badge/-Tasks-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Events](https://img.shields.io/badge/-Event_System-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+</div>
+
+### Fase 8 — Billing ⏳
+
+<div align="center">
+
+![Lago](https://img.shields.io/badge/-Integração_Lago-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+![Usage](https://img.shields.io/badge/-Métricas_de_Consumo-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) **Pendente**
+
+</div>
+
+---
+
+## 📊 Status Atual do Projeto
+
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="100%">
+
+**Versão**: 0.1.0 | **Data**: Março 2026 | **Status**: Fase 2 em Andamento
+
+</td>
+</tr>
+</table>
+
+</div>
+
+### ✅ O que está funcionando:
+
+<div align="center">
+
+<table>
+<tr>
+<td valign="top" width="50%">
+
+#### Core Platform ✅
+
+![Backend](https://img.shields.io/badge/-Backend_API_Completo-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) FastAPI
+
+![Database](https://img.shields.io/badge/-PostgreSQL_18_Configurado-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Database
+
+![Frontend](https://img.shields.io/badge/-Frontend_Nuxt_3-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) + Nuxt UI
+
+![Auth](https://img.shields.io/badge/-Sistema_Autenticação-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Completo
+
+![Tenants](https://img.shields.io/badge/-Gerenciamento_Tenants-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Multi-tenant
+
+![Clusters](https://img.shields.io/badge/-Gerenciamento_Clusters-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Proxmox
+
+![Dashboard](https://img.shields.io/badge/-Dashboard_Métricas-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Enterprise
+
+![Integration](https://img.shields.io/badge/-Integração_Proxmox_API-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Completa
+
+</td>
+<td valign="top" width="50%">
+
+#### Módulo de Backup ✅
+
+![PBS](https://img.shields.io/badge/-Integração_PBS_Nativa-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Proxmox Backup Server
+
+![Multi-Tenant](https://img.shields.io/badge/-Backup_Multi--Tenant-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Isolamento Completo
+
+![Policies](https://img.shields.io/badge/-Políticas_Automatizadas-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Agendamento
+
+![Health](https://img.shields.io/badge/-Monitoramento_Tempo_Real-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Health Checks
+
+![Property Tests](https://img.shields.io/badge/-Property--Based_Testing-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Validação
+
+![Unit Tests](https://img.shields.io/badge/-110+_Casos_de_Teste-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Cobertura
+
+![CI/CD](https://img.shields.io/badge/-CI/CD_GitHub_Actions-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Completo
+
+![Security](https://img.shields.io/badge/-Análise_Segurança-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) Automatizada
+
+</td>
+</tr>
+</table>
+
+</div>
+
+### ⏳ Próximos Passos:
+
+<div align="center">
+
+<table>
+<tr>
+<td valign="top" width="50%">
+
+#### Backup Module (Continuação) ⏳
+
+1. ![Task](https://img.shields.io/badge/-Property_Tests-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Configuration round-trip
+2. ![Task](https://img.shields.io/badge/-Agendador_Backup-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Scheduler engine
+3. ![Task](https://img.shields.io/badge/-Monitoramento_Alertas-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Monitoring system
+4. ![Task](https://img.shields.io/badge/-Operações_Restore-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Restore operations
+5. ![Task](https://img.shields.io/badge/-Catálogo_Busca-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Backup catalog
+
+</td>
+<td valign="top" width="50%">
+
+#### Resource Management ⏳
+
+6. ![Task](https://img.shields.io/badge/-Endpoints_API_REST-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) REST API endpoints
+7. ![Task](https://img.shields.io/badge/-Interface_Web_Backup-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Web interface
+8. ![Task](https://img.shields.io/badge/-Criação_VMs_Interface-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) VM creation
+9. ![Task](https://img.shields.io/badge/-Gerenciamento_Volumes-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Volume management
+10. ![Task](https://img.shields.io/badge/-Scheduler_Inteligente-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) Smart scheduler
+
+</td>
+</tr>
+</table>
+
+</div>
+
+---
+
+## 🎯 Visão Final
+
+<div align="center">
+
+### Transformação Completa
+
+PCM transforma o Proxmox em uma **plataforma cloud enterprise completa**.
 
 ```
-Users
-│
-▼
-PCM UI
-│
-▼
-PCM Control Plane
-│
-▼
-Proxmox Infrastructure
-│
-▼
-Clusters + Ceph + SDN
+┌─────────────────────────────────────────────────────────────┐
+│                      USERS                                  │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   PCM UI                                    │
+│              (Cloud Dashboard)                              │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│               PCM Control Plane                             │
+│    (Orquestração + Governança + Automação)                  │
+└─────────────────────┬───────────────────────────────────────┘
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│            Proxmox Infrastructure                           │
+│         (Clusters + Ceph + SDN + PBS)                       │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-PCM se posiciona como:
+### Posicionamento
 
-**Cloud Control Plane for Proxmox Infrastructure**
+![Cloud Control Plane](https://img.shields.io/badge/-Cloud_Control_Plane_for_Proxmox_Infrastructure-000000?style=for-the-badge&logo=cloud&logoColor=ff7a00)
 
----------------------------------------------------------------------
+</div>
 
-## Status Atual do Projeto
+---
 
-**Versão**: 0.1.0  
-**Data**: Março 2026  
-**Status**: Fase 1 Concluída, Fase 2 em Andamento
+<div align="center">
 
-### O que está funcionando:
-- ✅ Backend API completo (FastAPI)
-- ✅ Database PostgreSQL 18 configurado
-- ✅ Frontend Nuxt 3 + Nuxt UI
-- ✅ Sistema de autenticação
-- ✅ Gerenciamento de Tenants
-- ✅ Gerenciamento de Clusters
-- ✅ Dashboard com métricas
-- ✅ Interface enterprise completa
-- ✅ Integração com Proxmox API
-- ✅ Módulo de Backup completo
-  - ✅ Integração nativa com Proxmox Backup Server (PBS)
-  - ✅ Gerenciamento multi-tenant de backups
-  - ✅ Políticas de backup automatizadas
-  - ✅ Monitoramento de saúde em tempo real
-  - ✅ Validação de configuração com property-based testing
-  - ✅ Cobertura de testes abrangente (110+ casos de teste)
-- ✅ CI/CD completo com GitHub Actions
-  - ✅ Testes automatizados (backend/frontend)
-  - ✅ Análise de segurança e qualidade de código
-  - ✅ Performance monitoring
-  - ✅ Deploy automatizado
+### Filosofia do Projeto
 
-### Próximos Passos:
-1. Continuar implementação do módulo de backup
-   - ⏳ Implementar agendador de backup
-   - ⏳ Sistema de monitoramento e alertas
-   - ⏳ Operações de restore
-   - ⏳ Catálogo de backups e busca
-   - ⏳ Endpoints da API REST
-   - ⏳ Interface web para backup
-2. Implementar criação de VMs via interface
-3. Adicionar gerenciamento de volumes
-4. Implementar snapshots
-5. Desenvolver scheduler inteligente
-6. Adicionar observabilidade com OpenTelemetry
+_"Se não é monitorado, não existe."_
 
----------------------------------------------------------------------
+_"Se é repetitivo, deve ser automatizado."_
 
-**Repositório**: https://github.com/rsdenck/pcm  
-**Documentação**: README.md  
-**Licença**: MIT
+_"Infraestrutura não é arte. É engenharia."_
+
+---
+
+**[Repositório](https://github.com/rsdenck/pcm)** • **[Documentação](SETUP.md)** • **[API Reference](http://192.168.130.10:8000/docs)**
+
+Construído com precisão para gerenciamento de infraestrutura enterprise
+
+[![GitHub](https://img.shields.io/badge/-rsdenck-000000?style=for-the-badge&logo=github&logoColor=ff7a00)](https://github.com/rsdenck)
+
+</div>
