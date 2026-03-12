@@ -11,7 +11,7 @@ import yaml
 from typing import Dict, Any, Optional, Union, Tuple
 from pathlib import Path
 import jsonschema
-from pcm.core.models.backup.policy import BackupPolicy, BACKUP_POLICY_SCHEMA, validate_policy_configuration
+from core.models.backup.policy import BackupPolicy, BACKUP_POLICY_SCHEMA, validate_policy_configuration
 
 
 class ConfigurationParseError(Exception):
