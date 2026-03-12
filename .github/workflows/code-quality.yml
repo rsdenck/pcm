@@ -1,0 +1,193 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        
+    - name: Install Python quality tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort flake8 mypy pylint radon xenon
+        
+    - name: Install Node.js quality tools
+      working-directory: ./pcmfe
+      run: |
+        npm ci
+        npm install -g eslint prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin
+        
+    - name: Python code formatting check (Black)
+      working-directory: ./pcm
+      run: |
+        black --check --diff .
+        
+    - name: Python import sorting check (isort)
+      working-directory: ./pcm
+      run: |
+        isort --check-only --diff .
+        
+    - name: Python linting (flake8)
+      working-directory: ./pcm
+      run: |
+        flake8 . --count --statistics --tee --output-file=flake8-report.txt
+        
+    - name: Python type checking (mypy)
+      working-directory: ./pcm
+      run: |
+        mypy . --ignore-missing-imports --no-strict-optional --html-report mypy-report
+        
+    - name: Python code quality (pylint)
+      working-directory: ./pcm
+      run: |
+        pylint **/*.py --output-format=json > pylint-report.json || true
+        pylint **/*.py --output-format=text
+        
+    - name: Python complexity analysis (radon)
+      working-directory: ./pcm
+      run: |
+        radon cc . --json > radon-cc-report.json
+        radon cc . --show-complexity --min=B
+        radon mi . --json > radon-mi-report.json
+        radon mi . --show --min=B
+        
+    - name: Python maintainability check (xenon)
+      working-directory: ./pcm
+      run: |
+        xenon --max-absolute B --max-modules B --max-average A .
+        
+    - name: JavaScript/TypeScript linting (ESLint)
+      working-directory: ./pcmfe
+      run: |
+        npx eslint . --ext .js,.ts,.vue --format json --output-file eslint-report.json || true
+        npx eslint . --ext .js,.ts,.vue
+        
+    - name: JavaScript/TypeScript formatting check (Prettier)
+      working-directory: ./pcmfe
+      run: |
+        npx prettier --check .
+        
+    - name: TypeScript type checking
+      working-directory: ./pcmfe
+      run: |
+        npx nuxi typecheck
+        
+    - name: Generate code quality report
+      run: |
+        echo "# Code Quality Report" > code-quality-report.md
+        echo "Generated on: $(date)" >> code-quality-report.md
+        echo "" >> code-quality-report.md
+        
+        echo "## Python Code Quality" >> code-quality-report.md
+        
+        if [ -f pcm/flake8-report.txt ]; then
+          echo "### Flake8 Results" >> code-quality-report.md
+          echo '```' >> code-quality-report.md
+          tail -n 10 pcm/flake8-report.txt >> code-quality-report.md
+          echo '```' >> code-quality-report.md
+        fi
+        
+        if [ -f pcm/radon-cc-report.json ]; then
+          echo "### Complexity Analysis" >> code-quality-report.md
+          echo "Cyclomatic complexity analysis completed. Check artifacts for details." >> code-quality-report.md
+        fi
+        
+        echo "" >> code-quality-report.md
+        echo "## JavaScript/TypeScript Code Quality" >> code-quality-report.md
+        
+        if [ -f pcmfe/eslint-report.json ]; then
+          echo "### ESLint Results" >> code-quality-report.md
+          echo "ESLint analysis completed. Check artifacts for details." >> code-quality-report.md
+        fi
+        
+    - name: Upload code quality artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: code-quality-reports
+        path: |
+          pcm/flake8-report.txt
+          pcm/mypy-report/
+          pcm/pylint-report.json
+          pcm/radon-cc-report.json
+          pcm/radon-mi-report.json
+          pcmfe/eslint-report.json
+          code-quality-report.md
+        retention-days: 30
+        
+    - name: Comment PR with quality report
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request' && always()
+      with:
+        script: |
+          const fs = require('fs');
+          const path = 'code-quality-report.md';
+          
+          if (fs.existsSync(path)) {
+            const body = fs.readFileSync(path, 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          }
+
+  sonarcloud:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+        
+    - name: Install dependencies and run tests
+      working-directory: ./pcm
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-cov
+        
+    - name: Run tests with coverage
+      working-directory: ./pcm
+      run: |
+        pytest --cov=. --cov-report=xml --cov-report=html
+        
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=rsdenck_pcm
+          -Dsonar.organization=rsdenck
+          -Dsonar.python.coverage.reportPaths=pcm/coverage.xml
+          -Dsonar.sources=pcm/,pcmfe/
+          -Dsonar.exclusions=**/*test*/**,**/__pycache__/**,**/node_modules/**,**/dist/**,**/.nuxt/**

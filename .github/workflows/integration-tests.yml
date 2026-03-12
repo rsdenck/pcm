@@ -1,0 +1,193 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run integration tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: pcm_integration
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+          
+      # Mock Proxmox VE API for testing
+      proxmox-mock:
+        image: wiremock/wiremock:latest
+        ports:
+          - 8006:8080
+        options: >-
+          --health-cmd "curl -f http://localhost:8080/__admin/health || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        cache-dependency-path: pcmfe/package-lock.json
+        
+    - name: Install backend dependencies
+      working-directory: ./pcm
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-xdist pytest-timeout
+        
+    - name: Install frontend dependencies
+      working-directory: ./pcmfe
+      run: npm ci
+      
+    - name: Set up test environment
+      run: |
+        # Backend environment
+        cd pcm
+        cp .env.example .env
+        echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/pcm_integration" >> .env
+        echo "REDIS_URL=redis://localhost:6379/0" >> .env
+        echo "PROXMOX_API_URL=http://localhost:8006" >> .env
+        echo "TESTING=true" >> .env
+        echo "INTEGRATION_TESTING=true" >> .env
+        
+        # Frontend environment
+        cd ../pcmfe
+        cp .env.example .env
+        echo "NUXT_PUBLIC_API_BASE=http://localhost:8000" >> .env
+        
+    - name: Set up Proxmox mock responses
+      run: |
+        # Configure WireMock with Proxmox API responses
+        curl -X POST http://localhost:8006/__admin/mappings \
+          -H "Content-Type: application/json" \
+          -d '{
+            "request": {
+              "method": "GET",
+              "urlPattern": "/api2/json/version"
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "Content-Type": "application/json"
+              },
+              "jsonBody": {
+                "data": {
+                  "version": "7.4-3",
+                  "release": "7.4"
+                }
+              }
+            }
+          }'
+          
+    - name: Run database migrations
+      working-directory: ./pcm
+      run: alembic upgrade head
+      
+    - name: Start backend server
+      working-directory: ./pcm
+      run: |
+        python run.py &
+        echo $! > backend.pid
+        sleep 15
+        
+    - name: Verify backend health
+      run: |
+        curl -f http://localhost:8000/health || exit 1
+        
+    - name: Build frontend
+      working-directory: ./pcmfe
+      run: npm run build
+      
+    - name: Start frontend server
+      working-directory: ./pcmfe
+      run: |
+        npm run preview &
+        echo $! > frontend.pid
+        sleep 10
+        
+    - name: Verify frontend health
+      run: |
+        curl -f http://localhost:3000 || exit 1
+        
+    - name: Run backend integration tests
+      working-directory: ./pcm
+      run: |
+        pytest tests/ -m "integration" -v --tb=short --timeout=300
+        
+    - name: Run API integration tests
+      run: |
+        # Test API endpoints
+        curl -f http://localhost:8000/api/v1/health
+        curl -f http://localhost:8000/api/v1/backup/servers
+        
+    - name: Run full-stack integration tests
+      working-directory: ./pcmfe
+      run: |
+        npx playwright install --with-deps
+        npm run test:integration
+        
+    - name: Cleanup processes
+      if: always()
+      run: |
+        if [ -f pcm/backend.pid ]; then
+          kill $(cat pcm/backend.pid) || true
+        fi
+        if [ -f pcmfe/frontend.pid ]; then
+          kill $(cat pcmfe/frontend.pid) || true
+        fi
+        
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: |
+          pcm/integration-test-results/
+          pcmfe/integration-test-results/
+        retention-days: 7
+        
+    - name: Upload logs
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: integration-logs
+        path: |
+          pcm/logs/
+          pcmfe/.nuxt/logs/
+        retention-days: 7

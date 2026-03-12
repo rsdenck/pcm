@@ -1,0 +1,416 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run performance tests weekly on Sundays at 4 AM UTC
+    - cron: '0 4 * * 0'
+
+jobs:
+  backend-performance:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: pcm_perf
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+          
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+        
+    - name: Install dependencies
+      working-directory: ./pcm
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install locust pytest-benchmark memory-profiler
+        
+    - name: Set up environment
+      working-directory: ./pcm
+      run: |
+        cp .env.example .env
+        echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/pcm_perf" >> .env
+        echo "REDIS_URL=redis://localhost:6379/0" >> .env
+        echo "TESTING=true" >> .env
+        
+    - name: Run database migrations
+      working-directory: ./pcm
+      run: alembic upgrade head
+      
+    - name: Start backend server
+      working-directory: ./pcm
+      run: |
+        python run.py &
+        echo $! > backend.pid
+        sleep 15
+        
+    - name: Run API performance tests with Locust
+      working-directory: ./pcm
+      run: |
+        # Create Locust performance test file
+        cat > locustfile.py << 'EOF'
+        from locust import HttpUser, task, between
+        import json
+        
+        class PCMUser(HttpUser):
+            wait_time = between(1, 3)
+            
+            def on_start(self):
+                # Login and get token
+                response = self.client.post("/api/v1/auth/login", json={
+                    "username": "admin",
+                    "password": "admin"
+                })
+                if response.status_code == 200:
+                    self.token = response.json().get("access_token")
+                    self.headers = {"Authorization": f"Bearer {self.token}"}
+                else:
+                    self.headers = {}
+            
+            @task(3)
+            def get_health(self):
+                self.client.get("/health")
+                
+            @task(2)
+            def get_backup_servers(self):
+                self.client.get("/api/v1/backup/servers", headers=self.headers)
+                
+            @task(2)
+            def get_backup_policies(self):
+                self.client.get("/api/v1/backup/policies", headers=self.headers)
+                
+            @task(1)
+            def create_backup_policy(self):
+                policy_data = {
+                    "name": f"test-policy-{self.environment.runner.user_count}",
+                    "description": "Performance test policy",
+                    "configuration": {
+                        "schedule": {"cron": "0 2 * * *"},
+                        "retention": {"daily": 7},
+                        "targets": [{"vm_id": "vm-100", "cluster_id": "cluster-1", "datastore_id": "datastore-1"}]
+                    }
+                }
+                self.client.post("/api/v1/backup/policies", 
+                               json=policy_data, headers=self.headers)
+        EOF
+        
+        # Run Locust test
+        locust -f locustfile.py --host=http://localhost:8000 \
+               --users=10 --spawn-rate=2 --run-time=60s --headless \
+               --html=performance-report.html --csv=performance-results
+               
+    - name: Run memory profiling tests
+      working-directory: ./pcm
+      run: |
+        # Create memory profiling script
+        cat > memory_profile.py << 'EOF'
+        import requests
+        import time
+        from memory_profiler import profile
+        
+        @profile
+        def test_api_memory():
+            base_url = "http://localhost:8000"
+            
+            # Test multiple API calls
+            for i in range(100):
+                response = requests.get(f"{base_url}/health")
+                if i % 10 == 0:
+                    print(f"Completed {i} requests")
+                time.sleep(0.1)
+        
+        if __name__ == "__main__":
+            test_api_memory()
+        EOF
+        
+        python memory_profile.py > memory-profile-results.txt
+        
+    - name: Run database performance tests
+      working-directory: ./pcm
+      run: |
+        # Create database performance test
+        cat > db_performance.py << 'EOF'
+        import time
+        import statistics
+        from sqlalchemy import create_engine, text
+        from pcm.core.database.session import get_db_session
+        from pcm.core.models.backup.policy import BackupPolicy
+        
+        def test_db_performance():
+            results = []
+            
+            # Test database query performance
+            for i in range(50):
+                start_time = time.time()
+                
+                with get_db_session() as db:
+                    policies = db.query(BackupPolicy).limit(10).all()
+                
+                end_time = time.time()
+                results.append(end_time - start_time)
+            
+            print(f"Average query time: {statistics.mean(results):.4f}s")
+            print(f"Median query time: {statistics.median(results):.4f}s")
+            print(f"Max query time: {max(results):.4f}s")
+            print(f"Min query time: {min(results):.4f}s")
+        
+        if __name__ == "__main__":
+            test_db_performance()
+        EOF
+        
+        python db_performance.py > db-performance-results.txt
+        
+    - name: Cleanup backend process
+      if: always()
+      working-directory: ./pcm
+      run: |
+        if [ -f backend.pid ]; then
+          kill $(cat backend.pid) || true
+        fi
+        
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: backend-performance-results
+        path: |
+          pcm/performance-report.html
+          pcm/performance-results*.csv
+          pcm/memory-profile-results.txt
+          pcm/db-performance-results.txt
+        retention-days: 30
+
+  frontend-performance:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        cache-dependency-path: pcmfe/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./pcmfe
+      run: npm ci
+      
+    - name: Install Lighthouse CI
+      run: npm install -g @lhci/cli@0.12.x
+      
+    - name: Build application
+      working-directory: ./pcmfe
+      run: npm run build
+      
+    - name: Start application
+      working-directory: ./pcmfe
+      run: |
+        npm run preview &
+        echo $! > frontend.pid
+        sleep 15
+        
+    - name: Run Lighthouse CI
+      working-directory: ./pcmfe
+      run: |
+        # Create Lighthouse CI config
+        cat > lighthouserc.js << 'EOF'
+        module.exports = {
+          ci: {
+            collect: {
+              url: ['http://localhost:3000', 'http://localhost:3000/dashboard'],
+              numberOfRuns: 3,
+            },
+            assert: {
+              assertions: {
+                'categories:performance': ['warn', {minScore: 0.8}],
+                'categories:accessibility': ['error', {minScore: 0.9}],
+                'categories:best-practices': ['warn', {minScore: 0.8}],
+                'categories:seo': ['warn', {minScore: 0.8}],
+              },
+            },
+            upload: {
+              target: 'filesystem',
+              outputDir: './lighthouse-results',
+            },
+          },
+        };
+        EOF
+        
+        lhci autorun
+        
+    - name: Run bundle analysis
+      working-directory: ./pcmfe
+      run: |
+        # Analyze bundle size
+        npx nuxi analyze > bundle-analysis.txt
+        
+    - name: Run Core Web Vitals tests
+      working-directory: ./pcmfe
+      run: |
+        # Install Playwright for performance testing
+        npx playwright install --with-deps chromium
+        
+        # Create performance test
+        cat > performance-test.js << 'EOF'
+        const { chromium } = require('playwright');
+        
+        async function runPerformanceTest() {
+          const browser = await chromium.launch();
+          const page = await browser.newPage();
+          
+          // Navigate to the page
+          await page.goto('http://localhost:3000');
+          
+          // Get performance metrics
+          const performanceMetrics = await page.evaluate(() => {
+            return JSON.stringify(performance.getEntriesByType('navigation')[0]);
+          });
+          
+          console.log('Performance Metrics:', performanceMetrics);
+          
+          // Get Core Web Vitals
+          const webVitals = await page.evaluate(() => {
+            return new Promise((resolve) => {
+              const vitals = {};
+              
+              // LCP (Largest Contentful Paint)
+              new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                vitals.lcp = entries[entries.length - 1].startTime;
+              }).observe({ entryTypes: ['largest-contentful-paint'] });
+              
+              // FID (First Input Delay) - simulated
+              vitals.fid = 0; // Would need real user interaction
+              
+              // CLS (Cumulative Layout Shift)
+              new PerformanceObserver((list) => {
+                let cls = 0;
+                for (const entry of list.getEntries()) {
+                  if (!entry.hadRecentInput) {
+                    cls += entry.value;
+                  }
+                }
+                vitals.cls = cls;
+                resolve(vitals);
+              }).observe({ entryTypes: ['layout-shift'] });
+              
+              // Fallback resolve after 5 seconds
+              setTimeout(() => resolve(vitals), 5000);
+            });
+          });
+          
+          console.log('Core Web Vitals:', JSON.stringify(webVitals, null, 2));
+          
+          await browser.close();
+        }
+        
+        runPerformanceTest().catch(console.error);
+        EOF
+        
+        node performance-test.js > core-web-vitals.txt
+        
+    - name: Cleanup frontend process
+      if: always()
+      working-directory: ./pcmfe
+      run: |
+        if [ -f frontend.pid ]; then
+          kill $(cat frontend.pid) || true
+        fi
+        
+    - name: Upload frontend performance results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: frontend-performance-results
+        path: |
+          pcmfe/lighthouse-results/
+          pcmfe/bundle-analysis.txt
+          pcmfe/core-web-vitals.txt
+        retention-days: 30
+
+  performance-regression-check:
+    runs-on: ubuntu-latest
+    needs: [backend-performance, frontend-performance]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Download performance results
+      uses: actions/download-artifact@v3
+      
+    - name: Compare performance metrics
+      run: |
+        echo "# Performance Regression Check" > performance-comparison.md
+        echo "Generated on: $(date)" >> performance-comparison.md
+        echo "" >> performance-comparison.md
+        
+        # This would typically compare against baseline metrics
+        # For now, we'll just report the current metrics
+        echo "## Backend Performance" >> performance-comparison.md
+        if [ -f backend-performance-results/performance-results_stats.csv ]; then
+          echo "### API Performance Results" >> performance-comparison.md
+          echo '```' >> performance-comparison.md
+          cat backend-performance-results/performance-results_stats.csv >> performance-comparison.md
+          echo '```' >> performance-comparison.md
+        fi
+        
+        echo "## Frontend Performance" >> performance-comparison.md
+        if [ -d frontend-performance-results/lighthouse-results ]; then
+          echo "### Lighthouse Results Available" >> performance-comparison.md
+          ls -la frontend-performance-results/lighthouse-results/ >> performance-comparison.md
+        fi
+        
+    - name: Comment PR with performance results
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const fs = require('fs');
+          const path = 'performance-comparison.md';
+          
+          if (fs.existsSync(path)) {
+            const body = fs.readFileSync(path, 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          }
+          
+    - name: Upload performance comparison
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-comparison
+        path: performance-comparison.md
+        retention-days: 30
