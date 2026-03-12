@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\services\backup\scheduler_engine.py
+# hypothesis_version: 6.151.9
+
+[100, 'all_targets', 'conflicts', 'cron', 'current_stats', 'error_counts', 'event_counts', 'is_running', 'job_id', 'jobs_completed', 'jobs_failed', 'jobs_scheduled', 'max_concurrent_jobs', 'period_hours', 'policy_id', 'policy_name', 'queue_position', 'queued_jobs', 'resource', 'resource_conflicts', 'resource_locks', 'running_jobs', 'scheduled_time', 'scheduling', 'scheduling_conflicts', 'success', 'success_rate', 'target_count', 'tenant_id', 'total_jobs', 'vm_id']

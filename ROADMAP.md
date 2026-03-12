@@ -390,7 +390,8 @@ Stack completo com OpenTelemetry
 | ![Task](https://img.shields.io/badge/-5.3-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Property test para PBS server health monitoring | ✅ **CONCLUÍDO** |
 | ![Task](https://img.shields.io/badge/-5.4-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Unit tests para PBS server management | ✅ **CONCLUÍDO** |
 | ![Task](https://img.shields.io/badge/-6.2-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Implementar backup job execution | ✅ **CONCLUÍDO** |
-| ![Task](https://img.shields.io/badge/-6.3-000000?style=flat-square&logo=code&logoColor=ff7a00) | Property test para backup scheduling | ⏳ **PRÓXIMO** |
+| ![Task](https://img.shields.io/badge/-6.3-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Property test para backup scheduling | ✅ **CONCLUÍDO** |
+| ![Task](https://img.shields.io/badge/-6.4-000000?style=flat-square&logo=code&logoColor=ff7a00) | Unit tests para backup scheduler | ⏳ **PRÓXIMO** |
 
 </div>
 

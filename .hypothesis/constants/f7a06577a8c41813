@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\core\models\backup\schedule_event.py
+# hypothesis_version: 6.151.9
+
+[255, 'BackupJob', 'BackupPolicy', 'POLICY_ERROR', 'RESOURCE_CONFLICT', 'SCHEDULING_CONFLICT', 'SET NULL', 'ScheduleEvent', 'Tenant', 'backup_jobs.id', 'backup_policies.id', 'critical', 'error', 'event_time', 'id', 'info', 'job_cancelled', 'job_completed', 'job_failed', 'job_queued', 'job_scheduled', 'job_started', 'policy_error', 'queue_overflow', 'resource_conflict', 'schedule_events', 'scheduled_time', 'scheduler_started', 'scheduler_stopped', 'scheduling_conflict', 'severity', 'system_error', 'tenants.id', 'warning']

@@ -11,6 +11,7 @@ from .datastore import Datastore, DatastoreStatus
 from .policy import BackupPolicy, PolicyStatus, validate_policy_configuration, BACKUP_POLICY_SCHEMA
 from .job import BackupJob, JobStatus
 from .snapshot import BackupSnapshot, VerificationStatus
+from .schedule_event import ScheduleEvent, ScheduleEventType, ScheduleEventSeverity
 
 __all__ = [
     "PBSServer",
@@ -25,4 +26,7 @@ __all__ = [
     "JobStatus",
     "BackupSnapshot",
     "VerificationStatus",
+    "ScheduleEvent",
+    "ScheduleEventType",
+    "ScheduleEventSeverity",
 ]

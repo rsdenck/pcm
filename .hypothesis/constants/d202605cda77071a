@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\services\backup\job_runner.py
+# hypothesis_version: 6.151.9
+
+[100, 365, '%Y%m%d_%H%M%S', 'Unknown backup error', 'bandwidth_limit', 'cluster_id', 'compressed_size', 'compression', 'daily', 'datastore_id', 'duration', 'encryption', 'end_time', 'error', 'error_message', 'job_id', 'lz4', 'monthly', 'policy_name', 'progress', 'results', 'retry_count', 'size', 'snapshot_id', 'snapshots_created', 'start_time', 'status', 'success', 'target', 'targets_processed', 'targets_successful', 'transfer_rate', 'verification', 'vm_id', 'weekly', 'yearly']

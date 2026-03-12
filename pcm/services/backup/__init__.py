@@ -45,6 +45,12 @@ from .pbs_server_manager import (
     PBSServerRegistrationError
 )
 
+from .scheduler_engine import (
+    SchedulerEngine,
+    SchedulerEngineError,
+    SchedulingConflictError
+)
+
 from .job_runner import (
     BackupJobRunner,
     BackupJobRunnerError,
@@ -79,6 +85,9 @@ __all__ = [
     'PBSServerManager',
     'PBSServerManagerError',
     'PBSServerRegistrationError',
+    'SchedulerEngine',
+    'SchedulerEngineError',
+    'SchedulingConflictError',
     'BackupJobRunner',
     'BackupJobRunnerError',
     'BackupExecutionError',

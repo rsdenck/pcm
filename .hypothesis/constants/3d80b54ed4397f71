@@ -1,0 +1,4 @@
+# file: C:\Users\LAB\Documents\trae_projects\proxmon\pcm\services\backup\pbs_client.py
+# hypothesis_version: 6.151.9
+
+[0.1, 0.5, 100, 400, 401, 512, 1024, 'Authorization', 'Content-Type', 'DELETE', 'GET', 'POST', 'admin/datastore', 'application/json', 'backup-id', 'bandwidth_limit', 'bwlimit', 'compressed_size', 'compression', 'compression_ratio', 'config/datastore', 'data', 'datastore', 'datastores', 'duration', 'encrypt', 'encryption', 'error', 'healthy', 'lz4', 'name', 'path', 'size', 'snapshot', 'snapshot_name', 'status', 'success', 'timestamp', 'transfer_rate', 'type', 'verified', 'version', 'vm', 'vmid']
