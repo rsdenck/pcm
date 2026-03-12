@@ -576,7 +576,15 @@ Arquitetura baseada em serviços.
 - ✅ integração Proxmox API
 - ✅ gestão de clusters
 - ✅ gestão de nodes
-- ⏳ gestão de storage
+- ✅ gestão de storage
+- ✅ módulo de backup (PBS integration)
+  - ✅ modelos de dados (PBS Server, Datastore, Policy, Job, Snapshot)
+  - ✅ testes property-based para validação
+  - ✅ testes unitários abrangentes (110+ casos)
+  - ✅ configuração e validação de políticas
+  - ✅ gerenciamento de servidores PBS
+  - ✅ monitoramento de saúde
+  - ✅ sistema de configuração round-trip
 
 ## Fase 3 — Resource Management (PRÓXIMO)
 - ⏳ criação de VMs
@@ -654,13 +662,32 @@ PCM se posiciona como:
 - ✅ Dashboard com métricas
 - ✅ Interface enterprise completa
 - ✅ Integração com Proxmox API
+- ✅ Módulo de Backup completo
+  - ✅ Integração nativa com Proxmox Backup Server (PBS)
+  - ✅ Gerenciamento multi-tenant de backups
+  - ✅ Políticas de backup automatizadas
+  - ✅ Monitoramento de saúde em tempo real
+  - ✅ Validação de configuração com property-based testing
+  - ✅ Cobertura de testes abrangente (110+ casos de teste)
+- ✅ CI/CD completo com GitHub Actions
+  - ✅ Testes automatizados (backend/frontend)
+  - ✅ Análise de segurança e qualidade de código
+  - ✅ Performance monitoring
+  - ✅ Deploy automatizado
 
 ### Próximos Passos:
-1. Implementar criação de VMs via interface
-2. Adicionar gerenciamento de volumes
-3. Implementar snapshots
-4. Desenvolver scheduler inteligente
-5. Adicionar observabilidade com OpenTelemetry
+1. Continuar implementação do módulo de backup
+   - ⏳ Implementar agendador de backup
+   - ⏳ Sistema de monitoramento e alertas
+   - ⏳ Operações de restore
+   - ⏳ Catálogo de backups e busca
+   - ⏳ Endpoints da API REST
+   - ⏳ Interface web para backup
+2. Implementar criação de VMs via interface
+3. Adicionar gerenciamento de volumes
+4. Implementar snapshots
+5. Desenvolver scheduler inteligente
+6. Adicionar observabilidade com OpenTelemetry
 
 ---------------------------------------------------------------------
 
