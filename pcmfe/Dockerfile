@@ -1,5 +1,5 @@
 # Multi-stage build for PCM Frontend
-FROM node:20-alpine as builder
+FROM node:25-alpine as builder
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine as production
+FROM node:25-alpine as production
 
 # Set environment variables
 ENV NODE_ENV=production \
