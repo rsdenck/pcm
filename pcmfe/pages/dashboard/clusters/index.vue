@@ -46,11 +46,7 @@
                   size: { md: 'text-sm px-3 py-2' },
                   color: { white: 'bg-gray-50 shadow-sm ring-1 ring-gray-200 focus:ring-2 focus:ring-[#E57000] focus:ring-opacity-20' }
                 }"
-              >
-                <template #leading>
-                  <UIcon name="i-heroicons-magnifying-glass" class="text-gray-400" />
-                </template>
-              </UInput>
+              />
             </div>
             
             <div class="flex gap-3">
