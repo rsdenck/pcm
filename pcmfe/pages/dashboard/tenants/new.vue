@@ -31,8 +31,8 @@
           <template #header>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                  <UIcon name="i-heroicons-template" class="text-white text-xl" />
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-[#E57000] to-[#FF8C00] flex items-center justify-center">
+                  <UIcon name="i-heroicons-building-office" class="text-white text-lg" />
                 </div>
                 <div>
                   <h2 class="text-xl font-bold text-gray-900">Templates de Tenant</h2>
@@ -57,7 +57,12 @@
               @click="applyTemplate(template)"
               class="p-4 border-2 border-gray-200 rounded-xl hover:border-[#E57000] hover:bg-orange-50 cursor-pointer transition-all"
             >
-              <h3 class="font-semibold text-gray-900 mb-2">{{ template.name }}</h3>
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-[#E57000] to-[#FF8C00] flex items-center justify-center flex-shrink-0">
+                  <UIcon name="i-heroicons-building-office" class="text-white text-sm" />
+                </div>
+                <h3 class="font-semibold text-gray-900">{{ template.name }}</h3>
+              </div>
               <p class="text-sm text-gray-600 mb-3">{{ template.description }}</p>
               
               <div class="space-y-1 text-xs text-gray-500">
@@ -412,27 +417,28 @@
               <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200">
                 <UButton 
                   type="submit" 
-                  size="sm" 
+                  size="lg" 
                   :loading="submitting"
-                  class="flex-1 bg-gradient-to-r from-[#E57000] to-[#FF8C00] hover:from-[#CC6600] hover:to-[#E57000] text-white font-medium shadow-sm hover:shadow-md transition-all"
+                  :disabled="submitting"
+                  class="flex-1 bg-gradient-to-r from-[#E57000] to-[#FF8C00] hover:from-[#CC6600] hover:to-[#E57000] text-white font-medium shadow-md hover:shadow-lg transition-all"
                   :ui="{
                     rounded: 'rounded-lg',
-                    size: { sm: 'text-sm px-4 py-2' }
+                    size: { lg: 'text-base px-6 py-3' }
                   }"
                 >
-                  <UIcon name="i-heroicons-check-circle" class="mr-3 text-xl" />
+                  <UIcon name="i-heroicons-check-circle" class="mr-2" />
                   {{ submitting ? 'Criando...' : 'Criar Tenant' }}
                 </UButton>
                 
                 <UButton 
                   to="/dashboard/tenants" 
                   color="gray" 
-                  size="xl"
+                  size="lg"
                   variant="outline"
                   class="flex-1 sm:flex-none border-2 hover:bg-gray-50 transition-all"
                   :ui="{
-                    rounded: 'rounded-xl',
-                    size: { xl: 'text-lg px-8 py-4' }
+                    rounded: 'rounded-lg',
+                    size: { lg: 'text-base px-6 py-3' }
                   }"
                 >
                   Cancelar
@@ -448,8 +454,8 @@
           <UCard v-if="!showTemplates" class="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <template #header>
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <UIcon name="i-heroicons-template" class="text-blue-600 text-lg" />
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-[#E57000] to-[#FF8C00] flex items-center justify-center">
+                  <UIcon name="i-heroicons-building-office" class="text-white text-sm" />
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900">Templates</h3>
               </div>
@@ -467,7 +473,7 @@
                 size="md"
                 class="w-full"
               >
-                <UIcon name="i-heroicons-template" class="mr-2" />
+                <UIcon name="i-heroicons-building-office" class="mr-2" />
                 Ver Templates
               </UButton>
             </div>
