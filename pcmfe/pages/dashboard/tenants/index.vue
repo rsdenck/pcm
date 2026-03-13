@@ -16,8 +16,10 @@
           <div class="flex flex-col sm:flex-row gap-3">
             <UButton 
               @click="navigateToNew" 
+              :disabled="!canUpdate('tenant')"
               size="sm"
               class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] hover:from-[#CC6600] hover:to-[#E57000] text-white font-medium shadow-sm hover:shadow-md transition-all"
+              :class="{ 'opacity-50 cursor-not-allowed': !canUpdate('tenant') }"
               :ui="{
                 rounded: 'rounded-lg',
                 size: { sm: 'text-sm px-4 py-2' }
@@ -188,7 +190,7 @@
                   <div class="flex items-center gap-2">
                     <div class="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div 
-                        class="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all"
+                        class="h-full bg-gradient-to-r from-[#E57000] to-[#FF8C00] transition-all"
                         :style="{ width: `${getRamUsagePercentage(tenant)}%` }"
                       ></div>
                     </div>
@@ -203,7 +205,7 @@
                   <div class="flex items-center gap-2">
                     <div class="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div 
-                        class="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all"
+                        class="h-full bg-gradient-to-r from-[#E57000] to-[#FF8C00] transition-all"
                         :style="{ width: `${getStorageUsagePercentage(tenant)}%` }"
                       ></div>
                     </div>
@@ -241,20 +243,24 @@
               <div class="flex gap-1">
                 <UButton 
                   @click.stop="editTenant(tenant.id)"
+                  :disabled="!canUpdate('tenant')"
                   color="gray" 
                   variant="ghost" 
                   size="xs"
                   class="hover:bg-gray-50"
+                  :class="{ 'opacity-50 cursor-not-allowed': !canUpdate('tenant') }"
                 >
                   <UIcon name="i-heroicons-pencil" />
                 </UButton>
                 
                 <UButton 
                   @click.stop="viewTenantStats(tenant.id)"
+                  :disabled="!canRead('tenant')"
                   color="gray" 
                   variant="ghost" 
                   size="xs"
                   class="hover:bg-gray-50"
+                  :class="{ 'opacity-50 cursor-not-allowed': !canRead('tenant') }"
                 >
                   <UIcon name="i-heroicons-chart-bar" />
                 </UButton>
@@ -278,8 +284,11 @@
 </template>
 
 <script setup lang="ts">
+import { useRBAC3 } from '~/composables/useRBAC3'
+
 const config = useRuntimeConfig()
 const router = useRouter()
+const { canRead, canUpdate, canDelete } = useRBAC3()
 
 // Reactive data
 const tenants = ref([])
@@ -358,16 +367,34 @@ const refreshTenants = () => {
 }
 
 const navigateToTenant = (tenantId: string) => {
-  // Abrir em nova aba conforme solicitado
-  const url = `/dashboard/tenants/${tenantId}`
-  window.open(url, '_blank')
+  router.push(`/dashboard/tenants/${tenantId}`)
 }
 
 const editTenant = (tenantId: string) => {
+  if (!canUpdate('tenant')) {
+    const toast = useToast()
+    toast.add({
+      title: 'Permissão Negada',
+      description: 'Você não tem permissão para editar tenants.',
+      color: 'red',
+      timeout: 3000
+    })
+    return
+  }
   router.push(`/dashboard/tenants/${tenantId}/edit`)
 }
 
 const viewTenantStats = (tenantId: string) => {
+  if (!canRead('tenant')) {
+    const toast = useToast()
+    toast.add({
+      title: 'Permissão Negada',
+      description: 'Você não tem permissão para visualizar estatísticas.',
+      color: 'red',
+      timeout: 3000
+    })
+    return
+  }
   router.push(`/dashboard/tenants/${tenantId}/statistics`)
 }
 
@@ -422,6 +449,11 @@ const formatDate = (dateString: string) => {
 onMounted(() => {
   fetchTenants()
 })
+
+// Watch para refetch quando necessário
+watch([searchQuery, statusFilter], () => {
+  currentPage.value = 1
+}, { debounce: 300 })
 
 // Meta tags
 useHead({

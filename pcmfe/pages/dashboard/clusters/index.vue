@@ -16,8 +16,10 @@
           <div class="flex flex-col sm:flex-row gap-3">
             <UButton 
               @click="navigateToNew" 
+              :disabled="!canUpdate('cluster')"
               size="sm"
               class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] hover:from-[#CC6600] hover:to-[#E57000] text-white font-medium shadow-sm hover:shadow-md transition-all"
+              :class="{ 'opacity-50 cursor-not-allowed': !canUpdate('cluster') }"
               :ui="{
                 rounded: 'rounded-lg',
                 size: { sm: 'text-sm px-4 py-2' }
@@ -184,20 +186,24 @@
                 <UButton 
                   @click.stop="syncCluster(cluster.id)"
                   :loading="syncing[cluster.id]"
+                  :disabled="!canRead('cluster')"
                   color="gray" 
                   variant="ghost" 
                   size="xs"
                   class="hover:bg-gray-50"
+                  :class="{ 'opacity-50 cursor-not-allowed': !canRead('cluster') }"
                 >
                   <UIcon name="i-heroicons-arrow-path" />
                 </UButton>
                 
                 <UButton 
                   @click.stop="editCluster(cluster.id)"
+                  :disabled="!canUpdate('cluster')"
                   color="gray" 
                   variant="ghost" 
                   size="xs"
                   class="hover:bg-gray-50"
+                  :class="{ 'opacity-50 cursor-not-allowed': !canUpdate('cluster') }"
                 >
                   <UIcon name="i-heroicons-pencil" />
                 </UButton>
@@ -221,8 +227,11 @@
 </template>
 
 <script setup lang="ts">
+import { useRBAC3 } from '~/composables/useRBAC3'
+
 const config = useRuntimeConfig()
 const router = useRouter()
+const { canRead, canUpdate, canDelete } = useRBAC3()
 
 // Reactive data
 const clusters = ref([])
@@ -302,10 +311,30 @@ const refreshClusters = () => {
 }
 
 const navigateToCluster = (clusterId: string) => {
+  if (!canRead('cluster')) {
+    const toast = useToast()
+    toast.add({
+      title: 'Permissão Negada',
+      description: 'Você não tem permissão para visualizar clusters.',
+      color: 'red',
+      timeout: 3000
+    })
+    return
+  }
   router.push(`/dashboard/clusters/${clusterId}`)
 }
 
 const editCluster = (clusterId: string) => {
+  if (!canUpdate('cluster')) {
+    const toast = useToast()
+    toast.add({
+      title: 'Permissão Negada',
+      description: 'Você não tem permissão para editar clusters.',
+      color: 'red',
+      timeout: 3000
+    })
+    return
+  }
   router.push(`/dashboard/clusters/${clusterId}/edit`)
 }
 
@@ -369,6 +398,11 @@ const formatDate = (dateString: string) => {
 onMounted(() => {
   fetchClusters()
 })
+
+// Watch para refetch quando necessário
+watch([searchQuery, statusFilter], () => {
+  currentPage.value = 1
+}, { debounce: 300 })
 
 // Meta tags
 useHead({
