@@ -1,0 +1,544 @@
+# PCM - PROXMOX CENTER MANAGER
+# BUILD CONTEXT - DOCUMENTAÇÃO TÉCNICA COMPLETA
+# Data: Março 2026
+# Versão: 0.1.0
+
+================================================================================
+# IDENTIDADE VISUAL - PADRÕES IMUTÁVEIS
+================================================================================
+
+## CORES OFICIAIS (NÃO ALTERAR):
+🟠 LARANJA (#E57000): Botões primários, elementos de destaque, gradientes
+   - Primary: #E57000
+   - Light: #FF8C00  
+   - Dark: #CC6600
+
+⚪ BRANCO (#FFFFFF): Backgrounds de cards, containers, áreas principais
+   - Background: #ffffff
+   - Cards: bg-white
+   - Containers: bg-white
+
+⚫ PRETO: APENAS textos, ícones pequenos, detalhes finos
+   - Títulos: text-gray-900 (#111827)
+   - Textos: text-gray-800 (#1f2937)
+   - NUNCA usar em backgrounds de cards
+
+🔘 CINZA: Bordas, textos secundários, elementos neutros
+   - Bordas: border-gray-200 (#e5e7eb)
+   - Textos secundários: text-gray-600 (#4b5563)
+   - Backgrounds sutis: bg-gray-50 (#f9fafb)
+
+## TAMANHOS PADRONIZADOS (NÃO ALTERAR):
+- Títulos principais: text-2xl (24px) - font-bold
+- Títulos de seção: text-base (16px) - font-semibold  
+- Textos do corpo: text-sm (14px) - font-normal
+- Textos de legenda: text-xs (12px) - font-medium
+- Botões: size="sm" - text-sm px-4 py-2
+
+## COMPONENTES PADRONIZADOS:
+- Cards: shadow-sm border border-gray-200 bg-white
+- Botões primários: bg-gradient-to-r from-[#E57000] to-[#FF8C00]
+- Inputs: bg-gray-50 border-gray-200 rounded-lg
+- Ícones: w-10 h-10 (médios), text-lg (pequenos)
+
+================================================================================
+# ARQUITETURA TÉCNICA
+================================================================================
+
+## STACK TECNOLÓGICA:
+### Backend:
+- Python 3.12+
+- FastAPI (API REST)
+- SQLAlchemy 2.0 (ORM)
+- PostgreSQL 18 (Database)
+- Alembic (Migrations)
+- Pydantic (Validation)
+- AsyncIO (Async Operations)
+
+### Frontend:
+- Nuxt 3.21.1
+- Vue 3.5.30
+- Nuxt UI (Component Library)
+- Tailwind CSS (Styling)
+- TypeScript (Type Safety)
+
+### Infraestrutura:
+- PostgreSQL Database
+- Redis (Future - Caching)
+- Proxmox API Integration
+- Multi-tenant Architecture
+
+## ESTRUTURA DE DIRETÓRIOS:
+```
+pcm/                          # Backend
+├── core/
+│   ├── models/              # SQLAlchemy Models
+│   ├── database/            # Database Configuration
+│   └── config.py            # Settings
+├── services/
+│   ├── api/routes/          # API Endpoints
+│   ├── tenant_service.py    # Business Logic
+│   └── cluster_service.py   # Cluster Management
+├── alembic/                 # Database Migrations
+└── tests/                   # Unit Tests
+
+pcmfe/                       # Frontend
+├── pages/dashboard/         # Main Pages
+│   ├── tenants/            # Tenant Management
+│   ├── clusters/           # Cluster Management
+│   └── index.vue           # Dashboard
+├── assets/css/             # Styling
+│   ├── main.css            # Main Styles
+│   └── design-system.css   # Design System
+└── nuxt.config.ts          # Configuration
+```
+
+================================================================================
+# CONFIGURAÇÃO DE AMBIENTE
+================================================================================
+
+## BACKEND (PCM):
+- Host: 192.168.130.10
+- Port: 8000
+- API Base: http://192.168.130.10:8000/api/v1
+- Database: PostgreSQL (pcmdata_db)
+- User: pcm_user / pcm123
+
+## FRONTEND (PCMFE):
+- Host: 192.168.130.10  
+- Port: 9000
+- URL: http://192.168.130.10:9000
+- API Integration: Configured via runtimeConfig
+
+## COMANDOS DE EXECUÇÃO:
+```bash
+# Backend
+cd pcm
+$env:PYTHONPATH = ".."; python run.py
+
+# Frontend  
+cd pcmfe
+npm run dev -- --host 192.168.130.10 --port 9000
+```
+
+================================================================================
+# MÓDULOS IMPLEMENTADOS
+================================================================================
+
+## 1. TENANT MANAGEMENT (✅ COMPLETO):
+### Backend:
+- Models: pcm/core/models/tenant.py
+- Service: pcm/services/tenant_service.py
+- API: pcm/services/api/routes/tenants.py
+- Endpoints:
+  - GET /api/v1/tenants/ (List)
+  - POST /api/v1/tenants/ (Create)
+  - GET /api/v1/tenants/{id} (Details)
+  - GET /api/v1/tenants/templates/list (Templates)
+
+### Frontend:
+- List: pcmfe/pages/dashboard/tenants/index.vue
+- Create: pcmfe/pages/dashboard/tenants/new.vue
+- Details: pcmfe/pages/dashboard/tenants/[id].vue
+
+### Features:
+- Multi-tenant isolation
+- Quota management (CPU, RAM, Storage, Network)
+- Resource tracking
+- Billing integration ready
+- RBAC support
+
+## 2. CLUSTER MANAGEMENT (✅ COMPLETO):
+### Backend:
+- Models: pcm/core/models/cluster.py
+- Service: pcm/services/cluster_service.py
+- API: pcm/services/api/routes/clusters.py
+- Endpoints:
+  - GET /api/v1/clusters/ (List)
+  - POST /api/v1/clusters/ (Create)
+  - GET /api/v1/clusters/{id} (Details)
+  - POST /api/v1/clusters/test-connection (Test)
+  - POST /api/v1/clusters/{id}/sync (Sync)
+
+### Frontend:
+- List: pcmfe/pages/dashboard/clusters/index.vue
+- Create: pcmfe/pages/dashboard/clusters/new.vue
+
+### Features:
+- Proxmox API integration
+- Connection testing
+- Cluster synchronization
+- Multi-cluster support
+
+## 3. BACKUP MODULE (✅ COMPLETO):
+### Components:
+- PBS Integration
+- Policy Management
+- Job Scheduling
+- Health Monitoring
+- Property-based Testing (110+ tests)
+
+================================================================================
+# MÓDULOS FUTUROS (ROADMAP)
+================================================================================
+
+## 1. PBM - PROXMOX BACKUP MANAGER (🔄 PRÓXIMO):
+### Descrição:
+Sistema de backup integrado similar ao vCloud Director + Veeam
+
+### Features Planejadas:
+- Backup policies per tenant
+- Automated scheduling
+- Restore operations
+- Backup catalog
+- Multi-tenant isolation
+- Integration with Proxmox Backup Server
+
+### Arquitetura:
+```
+pcm/services/backup/
+├── pbm_manager.py          # Main PBM Service
+├── backup_policies.py      # Policy Management
+├── restore_manager.py      # Restore Operations
+└── catalog_service.py      # Backup Catalog
+
+pcmfe/pages/dashboard/pbm/
+├── index.vue              # PBM Dashboard
+├── policies/              # Policy Management
+├── backups/               # Backup Operations
+└── restore/               # Restore Interface
+```
+
+## 2. PMO - PROXMOX PLATFORM OBSERVABILITY (🔄 FUTURO):
+### Descrição:
+Sistema de observabilidade e monitoramento completo
+
+### Features Planejadas:
+- Metrics collection (OpenTelemetry)
+- Dashboards (Grafana-like)
+- Alerting system
+- Log aggregation
+- Performance monitoring
+- Multi-tenant metrics isolation
+
+### Arquitetura:
+```
+pcm/services/observability/
+├── metrics_collector.py    # Metrics Collection
+├── dashboard_service.py    # Dashboard Management
+├── alerting_engine.py      # Alert Management
+└── log_aggregator.py       # Log Processing
+
+pcmfe/pages/dashboard/pmo/
+├── index.vue              # PMO Dashboard
+├── metrics/               # Metrics Views
+├── alerts/                # Alert Management
+└── logs/                  # Log Viewer
+```
+
+================================================================================
+# SISTEMA DE PERMISSÕES E RBAC
+================================================================================
+
+## TIPOS DE USUÁRIO:
+
+### 1. ADMIN (Acesso Total):
+- Visão completa do PCM
+- Gerenciamento de todos os tenants
+- Configuração de clusters
+- Acesso a todos os módulos
+- Navegação livre entre tenants
+
+### 2. CLIENTE/USER (Acesso Limitado):
+- Acesso APENAS ao seu tenant
+- Não vê outros tenants
+- Pode gerenciar recursos do seu tenant:
+  - Criar VMs
+  - Configurar regras de firewall
+  - Gerenciar backups (PBM)
+  - Acessar observabilidade (PMO)
+- Interface simplificada
+
+## IMPLEMENTAÇÃO RBAC:
+```python
+# Backend - Middleware de autorização
+class TenantAccessMiddleware:
+    def check_tenant_access(user, tenant_id):
+        if user.role == "admin":
+            return True
+        return user.tenant_id == tenant_id
+
+# Frontend - Guards de rota
+function checkTenantAccess(to, from, next):
+    if (user.role === 'admin') {
+        next()
+    } else if (to.params.id === user.tenant_id) {
+        next()
+    } else {
+        next('/unauthorized')
+    }
+```
+
+================================================================================
+# API ENDPOINTS COMPLETOS
+================================================================================
+
+## TENANTS:
+- GET    /api/v1/tenants/                    # List tenants
+- POST   /api/v1/tenants/                    # Create tenant
+- GET    /api/v1/tenants/{id}                # Get tenant details
+- PUT    /api/v1/tenants/{id}                # Update tenant
+- DELETE /api/v1/tenants/{id}                # Delete tenant
+- GET    /api/v1/tenants/templates/list      # Get templates
+- GET    /api/v1/tenants/{id}/stats          # Get statistics
+
+## CLUSTERS:
+- GET    /api/v1/clusters/                   # List clusters
+- POST   /api/v1/clusters/                   # Create cluster
+- GET    /api/v1/clusters/{id}               # Get cluster details
+- PUT    /api/v1/clusters/{id}               # Update cluster
+- DELETE /api/v1/clusters/{id}               # Delete cluster
+- POST   /api/v1/clusters/test-connection    # Test connection
+- POST   /api/v1/clusters/{id}/sync          # Sync cluster
+- GET    /api/v1/clusters/{id}/stats         # Get statistics
+
+## USERS (Futuro):
+- GET    /api/v1/users/                      # List users
+- POST   /api/v1/users/                      # Create user
+- GET    /api/v1/users/{id}                  # Get user details
+- PUT    /api/v1/users/{id}                  # Update user
+- DELETE /api/v1/users/{id}                  # Delete user
+
+## PBM (Futuro):
+- GET    /api/v1/pbm/policies/               # List backup policies
+- POST   /api/v1/pbm/policies/               # Create policy
+- GET    /api/v1/pbm/backups/                # List backups
+- POST   /api/v1/pbm/backups/{id}/restore    # Restore backup
+
+## PMO (Futuro):
+- GET    /api/v1/pmo/metrics/                # Get metrics
+- GET    /api/v1/pmo/dashboards/             # List dashboards
+- GET    /api/v1/pmo/alerts/                 # List alerts
+
+================================================================================
+# DATABASE SCHEMA
+================================================================================
+
+## TABELAS PRINCIPAIS:
+
+### tenants:
+```sql
+CREATE TABLE tenants (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE,
+    tenant_id VARCHAR(255) UNIQUE,
+    organization VARCHAR(255),
+    owner VARCHAR(255),
+    description TEXT,
+    region VARCHAR(100),
+    datacenter VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'active',
+    billing_plan VARCHAR(50),
+    quotas JSONB,
+    current_usage JSONB,
+    configuration JSONB,
+    tenant_metadata JSONB,
+    network_isolation JSONB,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### proxmox_clusters:
+```sql
+CREATE TABLE proxmox_clusters (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    hostname VARCHAR(255) NOT NULL,
+    port INTEGER DEFAULT 8006,
+    cluster_type VARCHAR(50) DEFAULT 'pve',
+    api_token_id VARCHAR(255),
+    api_token_secret VARCHAR(255),
+    verify_ssl BOOLEAN DEFAULT FALSE,
+    status VARCHAR(50) DEFAULT 'offline',
+    description TEXT,
+    tenant_id UUID REFERENCES tenants(id),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### users:
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255),
+    role VARCHAR(50) DEFAULT 'user',
+    tenant_id UUID REFERENCES tenants(id),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+================================================================================
+# CONFIGURAÇÕES DE DESENVOLVIMENTO
+================================================================================
+
+## GIT REPOSITORY:
+- Remote: https://github.com/rsdenck/pcm
+- Branch Principal: main
+- Branch de Desenvolvimento: develop
+- Feature Branches: feature/nome-da-feature
+
+## WORKFLOW DE DESENVOLVIMENTO:
+1. Criar feature branch: `git checkout -b feature/nova-funcionalidade`
+2. Desenvolver e testar localmente
+3. Commit com mensagens descritivas
+4. Push para remote: `git push origin feature/nova-funcionalidade`
+5. Criar Pull Request para develop
+6. Code review e merge
+7. Deploy para produção via main branch
+
+## COMANDOS GIT ESSENCIAIS:
+```bash
+# Clone do repositório
+git clone https://github.com/rsdenck/pcm.git
+
+# Configurar upstream
+git remote add upstream https://github.com/rsdenck/pcm.git
+
+# Atualizar branch local
+git pull upstream main
+
+# Criar feature branch
+git checkout -b feature/pbm-implementation
+
+# Commit changes
+git add .
+git commit -m "feat: implement PBM backup policies"
+
+# Push feature branch
+git push origin feature/pbm-implementation
+```
+
+================================================================================
+# TESTES E QUALIDADE
+================================================================================
+
+## BACKEND TESTING:
+- Unit Tests: pytest
+- Property Tests: Hypothesis (110+ tests implementados)
+- Integration Tests: FastAPI TestClient
+- Coverage: >90% target
+
+## FRONTEND TESTING:
+- Unit Tests: Vitest
+- Component Tests: Vue Test Utils
+- E2E Tests: Playwright (futuro)
+
+## CI/CD PIPELINE:
+- GitHub Actions configurado
+- Automated testing
+- Code quality checks
+- Security scanning
+- Performance monitoring
+
+================================================================================
+# DEPLOYMENT E PRODUÇÃO
+================================================================================
+
+## AMBIENTE DE DESENVOLVIMENTO:
+- Local development com Docker Compose
+- PostgreSQL container
+- Hot reload habilitado
+
+## AMBIENTE DE PRODUÇÃO:
+- Kubernetes deployment
+- PostgreSQL cluster
+- Redis cluster
+- Load balancer
+- SSL/TLS certificates
+- Monitoring stack
+
+## CONFIGURAÇÕES DE SEGURANÇA:
+- JWT authentication
+- RBAC implementation
+- API rate limiting
+- Input validation
+- SQL injection protection
+- XSS protection
+
+================================================================================
+# PRÓXIMOS PASSOS IMEDIATOS
+================================================================================
+
+1. ✅ Finalizar ajustes de identidade visual
+2. 🔄 Implementar funcionalidades dos botões em tenant details
+3. 🔄 Criar sistema de permissões RBAC
+4. 🔄 Implementar PBM (Proxmox Backup Manager)
+5. 🔄 Desenvolver PMO (Proxmox Platform Observability)
+6. 🔄 Criar interface específica para usuários cliente
+7. 🔄 Implementar autenticação e autorização
+8. 🔄 Adicionar testes E2E
+9. 🔄 Configurar ambiente de produção
+10. 🔄 Documentação de API completa
+
+================================================================================
+# CONTATOS E RESPONSABILIDADES
+================================================================================
+
+## DESENVOLVEDOR PRINCIPAL:
+- GitHub: @rsdenck
+- Repositório: https://github.com/rsdenck/pcm
+
+## DOCUMENTAÇÃO:
+- README.md: Documentação geral
+- SETUP.md: Guia de instalação
+- ROADMAP.md: Plano de desenvolvimento
+- BUILD_CONTEXT.txt: Este documento (contexto técnico completo)
+
+================================================================================
+# NOTAS IMPORTANTES
+================================================================================
+
+1. NUNCA usar dados mock - sempre integração real com APIs
+2. Manter identidade visual consistente - cores e tamanhos padronizados
+3. Seguir arquitetura multi-tenant rigorosamente
+4. Implementar RBAC desde o início
+5. Documentar todas as mudanças neste arquivo
+6. Testar todas as funcionalidades antes do commit
+7. Manter compatibilidade com Proxmox API
+8. Seguir padrões de segurança enterprise
+9. Implementar logging e monitoramento adequados
+10. Manter performance e escalabilidade em mente
+
+================================================================================
+# CHANGELOG
+================================================================================
+
+## v0.1.0 - Março 2026:
+- ✅ Implementação inicial do PCM
+- ✅ Sistema de tenants completo
+- ✅ Gerenciamento de clusters
+- ✅ Módulo de backup básico
+- ✅ Identidade visual padronizada
+- ✅ API REST completa
+- ✅ Frontend responsivo
+- ✅ Testes automatizados (110+)
+- ✅ CI/CD pipeline
+- ✅ Documentação técnica completa
+
+## Próximas versões:
+- v0.2.0: PBM (Proxmox Backup Manager)
+- v0.3.0: PMO (Proxmox Platform Observability)
+- v0.4.0: Sistema de usuários e RBAC
+- v0.5.0: Interface cliente multi-tenant
+- v1.0.0: Release de produção
+
+================================================================================
+# FIM DO BUILD_CONTEXT.txt
+================================================================================

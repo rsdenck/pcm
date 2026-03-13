@@ -1,99 +1,224 @@
 <template>
-  <div class="p-6 md:p-8 w-full">
-    <!-- Header -->
-    <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <h1 class="text-3xl font-bold text-[#000000] mb-1">Clusters Proxmox</h1>
-        <p class="text-sm text-[#666666]">Gerenciamento de clusters multi-site</p>
-      </div>
-      
-      <UButton 
-        to="/dashboard/clusters/new" 
-        class="bg-[#E57000] hover:bg-[#CC6600] text-white"
-      >
-        <UIcon name="i-heroicons-plus" class="mr-2" />
-        Adicionar Cluster
-      </UButton>
-    </header>
-
-    <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center h-64">
-      <div class="relative w-12 h-12">
-        <div class="absolute inset-0 border-4 border-[#e5e5e5] rounded-full"></div>
-        <div class="absolute inset-0 border-4 border-[#E57000] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div v-else>
-      <!-- Empty State -->
-      <div v-if="clusters.length === 0" class="bg-white rounded-lg border border-[#e5e5e5] p-16 text-center">
-        <div class="w-16 h-16 rounded-full bg-[#fafafa] flex items-center justify-center mx-auto mb-4">
-          <UIcon name="i-heroicons-server" class="text-[#999999] text-3xl" />
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <header class="mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">
+              Clusters
+            </h1>
+            <p class="text-sm text-gray-600">
+              Gerencie clusters Proxmox da sua infraestrutura multi-site
+            </p>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-3">
+            <UButton 
+              @click="navigateToNew" 
+              size="sm"
+              class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] hover:from-[#CC6600] hover:to-[#E57000] text-white font-medium shadow-sm hover:shadow-md transition-all"
+              :ui="{
+                rounded: 'rounded-lg',
+                size: { sm: 'text-sm px-4 py-2' }
+              }"
+            >
+              <UIcon name="i-heroicons-plus" class="mr-2 text-sm" />
+              Adicionar Cluster
+            </UButton>
+          </div>
         </div>
-        <h3 class="text-lg font-semibold text-[#000000] mb-2">Nenhum Cluster Configurado</h3>
-        <p class="text-[#666666] mb-6 max-w-md mx-auto">
-          Adicione seu primeiro cluster Proxmox para começar a gerenciar sua infraestrutura
-        </p>
-        <UButton 
-          to="/dashboard/clusters/new" 
-          class="bg-[#E57000] hover:bg-[#CC6600] text-white"
-        >
-          <UIcon name="i-heroicons-plus" class="mr-2" />
-          Adicionar Cluster
-        </UButton>
-      </div>
+      </header>
 
-      <!-- Clusters List -->
-      <div v-else class="space-y-4">
-        <div 
-          v-for="cluster in clusters" 
-          :key="cluster.id" 
-          class="bg-white rounded-lg border border-[#e5e5e5] p-6 hover:border-[#E57000]/30 hover:shadow-md transition-all"
-        >
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <div class="w-14 h-14 rounded-lg bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
-                <UIcon name="i-heroicons-server" class="text-[#E57000] text-2xl" />
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-[#000000]">{{ cluster.name }}</h3>
-                <div class="flex items-center gap-3 mt-1">
-                  <span class="text-sm text-[#666666]">{{ cluster.hostname }}:{{ cluster.port }}</span>
-                  <div class="w-1 h-1 bg-[#d4d4d4] rounded-full"></div>
-                  <span class="text-xs font-medium text-[#E57000] uppercase">{{ cluster.cluster_type }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <span 
-                class="px-3 py-1 rounded-full text-xs font-medium"
-                :class="cluster.status === 'online' 
-                  ? 'bg-green-50 text-green-700 border border-green-200' 
-                  : 'bg-red-50 text-red-700 border border-red-200'"
+      <!-- Filters and Search -->
+      <div class="mb-6">
+        <UCard class="shadow-sm border border-gray-200 bg-white">
+          <div class="flex flex-col md:flex-row gap-3">
+            <div class="flex-1">
+              <UInput 
+                v-model="searchQuery" 
+                placeholder="Buscar clusters..." 
+                size="md"
+                class="w-full"
+                :ui="{ 
+                  base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-75 focus:outline-none border-0',
+                  rounded: 'rounded-lg',
+                  size: { md: 'text-sm px-3 py-2' },
+                  color: { white: 'bg-gray-50 shadow-sm ring-1 ring-gray-200 focus:ring-2 focus:ring-[#E57000] focus:ring-opacity-20' }
+                }"
               >
-                {{ cluster.status === 'online' ? 'Online' : 'Offline' }}
-              </span>
+                <template #leading>
+                  <UIcon name="i-heroicons-magnifying-glass" class="text-gray-400" />
+                </template>
+              </UInput>
+            </div>
+            
+            <div class="flex gap-3">
+              <USelect 
+                v-model="statusFilter" 
+                :options="statusOptions"
+                size="md"
+                class="w-40"
+                :ui="{ 
+                  base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-75 focus:outline-none border-0',
+                  rounded: 'rounded-lg',
+                  size: { md: 'text-sm px-3 py-2' },
+                  color: { white: 'bg-gray-50 shadow-sm ring-1 ring-gray-200 focus:ring-2 focus:ring-[#E57000] focus:ring-opacity-20' }
+                }"
+              />
+              
               <UButton 
-                @click="syncCluster(cluster.id)" 
-                color="gray" 
-                size="sm"
-                :loading="syncing[cluster.id]"
-                class="text-[#333333] hover:bg-[#fafafa]"
+                @click="refreshClusters" 
+                :loading="loading"
+                color="gray"
+                variant="outline"
+                size="md"
+                class="border border-gray-200"
+                :ui="{
+                  rounded: 'rounded-lg'
+                }"
               >
                 <UIcon name="i-heroicons-arrow-path" />
               </UButton>
-              <UButton 
-                :to="`/dashboard/clusters/${cluster.id}`" 
-                color="gray" 
-                size="sm"
-                class="text-[#333333] hover:bg-[#fafafa]"
-              >
-                Ver Detalhes
-              </UButton>
             </div>
           </div>
+        </UCard>
+      </div>
+
+      <!-- Clusters Grid -->
+      <div v-if="loading && clusters.length === 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-for="i in 6" :key="i" class="animate-pulse">
+          <UCard class="shadow-sm border border-gray-200 bg-white h-48">
+            <div class="space-y-3">
+              <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+              <div class="h-2 bg-gray-200 rounded w-1/2"></div>
+              <div class="space-y-2">
+                <div class="h-2 bg-gray-200 rounded"></div>
+                <div class="h-2 bg-gray-200 rounded w-5/6"></div>
+              </div>
+            </div>
+          </UCard>
         </div>
+      </div>
+
+      <div v-else-if="filteredClusters.length === 0 && !loading" class="text-center py-12">
+        <UIcon name="i-heroicons-server" class="text-4xl text-gray-300 mx-auto mb-3" />
+        <h3 class="text-lg font-medium text-gray-600 mb-2">Nenhum cluster encontrado</h3>
+        <p class="text-sm text-gray-500 mb-4">
+          {{ searchQuery ? 'Tente ajustar os filtros de busca' : 'Comece adicionando seu primeiro cluster' }}
+        </p>
+        <UButton 
+          v-if="!searchQuery"
+          @click="navigateToNew" 
+          size="sm"
+          class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] hover:from-[#CC6600] hover:to-[#E57000] text-white"
+        >
+          <UIcon name="i-heroicons-plus" class="mr-2" />
+          Adicionar Primeiro Cluster
+        </UButton>
+      </div>
+
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <UCard 
+          v-for="cluster in filteredClusters" 
+          :key="cluster.id"
+          class="shadow-sm border border-gray-200 bg-white hover:shadow-md transition-all cursor-pointer"
+          @click="navigateToCluster(cluster.id)"
+        >
+          <template #header>
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-[#E57000] to-[#FF8C00] flex items-center justify-center">
+                  <UIcon name="i-heroicons-server" class="text-white text-lg" />
+                </div>
+                <div>
+                  <h3 class="text-base font-semibold text-gray-900 truncate">{{ cluster.name }}</h3>
+                  <p class="text-xs text-gray-500">{{ cluster.hostname }}:{{ cluster.port }}</p>
+                </div>
+              </div>
+              
+              <UBadge 
+                :color="getStatusColor(cluster.status)" 
+                variant="subtle"
+                class="capitalize text-xs"
+              >
+                {{ getStatusLabel(cluster.status) }}
+              </UBadge>
+            </div>
+          </template>
+
+          <div class="space-y-3">
+            <!-- Cluster Info -->
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-xs text-gray-600">
+                <UIcon name="i-heroicons-cube" class="text-gray-400" />
+                <span class="capitalize">{{ cluster.cluster_type }}</span>
+              </div>
+              
+              <div v-if="cluster.description" class="flex items-center gap-2 text-xs text-gray-600">
+                <UIcon name="i-heroicons-document-text" class="text-gray-400" />
+                <span>{{ cluster.description }}</span>
+              </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-gray-100">
+              <div class="text-center">
+                <div class="text-sm font-semibold text-gray-900">{{ cluster.nodes_count || 0 }}</div>
+                <div class="text-xs text-gray-500">Nodes</div>
+              </div>
+              <div class="text-center">
+                <div class="text-sm font-semibold text-gray-900">{{ cluster.vms_count || 0 }}</div>
+                <div class="text-xs text-gray-500">VMs</div>
+              </div>
+              <div class="text-center">
+                <div class="text-sm font-semibold text-gray-900">{{ cluster.containers_count || 0 }}</div>
+                <div class="text-xs text-gray-500">Containers</div>
+              </div>
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-500">
+                Adicionado em {{ formatDate(cluster.created_at) }}
+              </span>
+              
+              <div class="flex gap-1">
+                <UButton 
+                  @click.stop="syncCluster(cluster.id)"
+                  :loading="syncing[cluster.id]"
+                  color="gray" 
+                  variant="ghost" 
+                  size="xs"
+                  class="hover:bg-gray-50"
+                >
+                  <UIcon name="i-heroicons-arrow-path" />
+                </UButton>
+                
+                <UButton 
+                  @click.stop="editCluster(cluster.id)"
+                  color="gray" 
+                  variant="ghost" 
+                  size="xs"
+                  class="hover:bg-gray-50"
+                >
+                  <UIcon name="i-heroicons-pencil" />
+                </UButton>
+              </div>
+            </div>
+          </template>
+        </UCard>
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="filteredClusters.length > 0" class="mt-8 flex justify-center">
+        <UPagination 
+          v-model="currentPage" 
+          :page-count="pageSize" 
+          :total="totalClusters"
+          class="shadow-lg"
+        />
       </div>
     </div>
   </div>
@@ -101,35 +226,159 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig()
-const loading = ref(true)
-const syncing = ref<Record<string, boolean>>({})
+const router = useRouter()
+
+// Reactive data
 const clusters = ref([])
+const loading = ref(true)
+const searchQuery = ref('')
+const statusFilter = ref('all')
+const currentPage = ref(1)
+const pageSize = ref(12)
+const totalClusters = ref(0)
+const syncing = ref<Record<string, boolean>>({})
+
+// Status options for filter
+const statusOptions = [
+  { label: 'Todos os Status', value: 'all' },
+  { label: 'Online', value: 'online' },
+  { label: 'Offline', value: 'offline' },
+  { label: 'Manutenção', value: 'maintenance' }
+]
+
+// Computed properties
+const filteredClusters = computed(() => {
+  let filtered = clusters.value
+
+  // Filter by search query
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(cluster => 
+      cluster.name.toLowerCase().includes(query) ||
+      cluster.hostname.toLowerCase().includes(query) ||
+      cluster.cluster_type.toLowerCase().includes(query)
+    )
+  }
+
+  // Filter by status
+  if (statusFilter.value !== 'all') {
+    filtered = filtered.filter(cluster => cluster.status === statusFilter.value)
+  }
+
+  return filtered
+})
+
+// Methods
+const navigateToNew = () => {
+  console.log('Botão Adicionar Cluster clicado!')
+  try {
+    router.push('/dashboard/clusters/new')
+    console.log('Navegação iniciada para /dashboard/clusters/new')
+  } catch (error) {
+    console.error('Erro na navegação:', error)
+  }
+}
 
 const fetchClusters = async () => {
-  loading.value = true
   try {
-    const { data } = await useFetch(`${config.public.apiBase}/clusters`)
-    clusters.value = data.value || []
+    loading.value = true
+    const response = await $fetch(`${config.public.apiBase}/clusters/`)
+    
+    clusters.value = response || []
+    totalClusters.value = response?.length || 0
   } catch (error) {
-    console.error('Failed to fetch clusters', error)
+    console.error('Failed to fetch clusters:', error)
+    clusters.value = []
+    const toast = useToast()
+    toast.add({
+      title: 'Erro ao Carregar Clusters',
+      description: 'Não foi possível carregar a lista de clusters.',
+      color: 'red',
+      timeout: 5000
+    })
   } finally {
     loading.value = false
   }
 }
 
+const refreshClusters = () => {
+  fetchClusters()
+}
+
+const navigateToCluster = (clusterId: string) => {
+  router.push(`/dashboard/clusters/${clusterId}`)
+}
+
+const editCluster = (clusterId: string) => {
+  router.push(`/dashboard/clusters/${clusterId}/edit`)
+}
+
 const syncCluster = async (clusterId: string) => {
   syncing.value[clusterId] = true
   try {
-    await $fetch(`${config.public.apiBase}/clusters/${clusterId}/sync`)
+    await $fetch(`${config.public.apiBase}/clusters/${clusterId}/sync`, {
+      method: 'POST'
+    })
     await fetchClusters()
+    
+    const toast = useToast()
+    toast.add({
+      title: 'Cluster Sincronizado',
+      description: 'O cluster foi sincronizado com sucesso.',
+      color: 'green',
+      timeout: 3000
+    })
   } catch (error) {
     console.error('Failed to sync cluster', error)
+    const toast = useToast()
+    toast.add({
+      title: 'Erro na Sincronização',
+      description: 'Não foi possível sincronizar o cluster.',
+      color: 'red',
+      timeout: 5000
+    })
   } finally {
     syncing.value[clusterId] = false
   }
 }
 
+// Utility functions
+const getStatusColor = (status: string) => {
+  const colors = {
+    online: 'green',
+    offline: 'red',
+    maintenance: 'yellow'
+  }
+  return colors[status] || 'gray'
+}
+
+const getStatusLabel = (status: string) => {
+  const labels = {
+    online: 'Online',
+    offline: 'Offline',
+    maintenance: 'Manutenção'
+  }
+  return labels[status] || status
+}
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  })
+}
+
+// Lifecycle
 onMounted(() => {
   fetchClusters()
+})
+
+// Meta tags
+useHead({
+  title: 'Clusters - PCM',
+  meta: [
+    { name: 'description', content: 'Gerencie clusters Proxmox da sua infraestrutura multi-site' }
+  ]
 })
 </script>

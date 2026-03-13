@@ -1,6 +1,12 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   
+  // Configuração do servidor de desenvolvimento
+  devServer: {
+    host: '192.168.130.10',
+    port: 9000
+  },
+  
   modules: ['@nuxt/ui'],
   
   css: ['~/assets/css/main.css'],

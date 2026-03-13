@@ -22,6 +22,14 @@ class ClusterCreate(BaseModel):
     tenant_id: str
 
 
+class ClusterTestConnection(BaseModel):
+    hostname: str
+    port: int = 8006
+    api_token_id: str
+    api_token_secret: str
+    verify_ssl: bool = False
+
+
 class ClusterResponse(BaseModel):
     id: str
     name: str
@@ -34,6 +42,31 @@ class ClusterResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+@router.post("/test-connection")
+async def test_connection(connection_data: ClusterTestConnection):
+    """Test connection to a Proxmox cluster."""
+    try:
+        client = ProxmoxClient(
+            host=connection_data.hostname,
+            port=connection_data.port,
+            token_id=connection_data.api_token_id,
+            token_secret=connection_data.api_token_secret,
+            verify_ssl=connection_data.verify_ssl,
+        )
+        
+        version_info = await client.get_version()
+        return {
+            "success": True,
+            "message": "Connection successful",
+            "version": version_info.get("version", "Unknown")
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Connection failed: {str(e)}"
+        )
 
 
 @router.get("", response_model=List[ClusterResponse])
@@ -83,7 +116,7 @@ async def get_cluster(cluster_id: str, db: AsyncSession = Depends(get_db)):
     return cluster
 
 
-@router.get("/{cluster_id}/sync")
+@router.post("/{cluster_id}/sync")
 async def sync_cluster(cluster_id: str, db: AsyncSession = Depends(get_db)):
     from pcm.services.cluster_service import ClusterService
     

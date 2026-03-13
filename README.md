@@ -306,6 +306,113 @@ Veja [LAB.md](LAB.md) para detalhes completos da configuração do laboratório.
 
 ---
 
+## Screenshots da Interface
+
+<div align="center">
+
+### Dashboard Principal
+
+<img src="img/pcm_dashboard.png" alt="PCM Dashboard" width="800"/>
+
+*Dashboard principal do PCM com visão geral da infraestrutura*
+
+### Gerenciamento de Tenants
+
+<img src="img/pcm_tenants.png" alt="PCM Tenants" width="800"/>
+
+*Interface de gerenciamento multi-tenant com quotas e recursos*
+
+### Gerenciamento de Clusters
+
+<img src="img/pcm_clusters.png" alt="PCM Clusters" width="800"/>
+
+*Controle centralizado de clusters Proxmox distribuídos*
+
+### Recursos de Computação
+
+<img src="img/pcm_computer.png" alt="PCM Compute" width="800"/>
+
+*Gerenciamento de recursos de computação e VMs*
+
+</div>
+
+---
+
+## Proxmox Stack
+
+<div align="center">
+
+### Repositórios Recomendados
+
+**Ecossistema completo de ferramentas para infraestrutura Proxmox enterprise**
+
+<table>
+<tr>
+<td valign="top" width="50%">
+
+### Plataforma Principal
+
+![PCM](https://img.shields.io/badge/-PCM_Proxmox_Control_Manager-000000?style=for-the-badge&logo=proxmox&logoColor=ff7a00)
+
+**Em desenvolvimento** - Plano de controle cloud para Proxmox
+
+[![GitHub](https://img.shields.io/badge/-GitHub-000000?style=flat-square&logo=github&logoColor=ff7a00)](https://github.com/rsdenck/pcm)
+
+![PMO](https://img.shields.io/badge/-PMO_Platform_Observability-000000?style=for-the-badge&logo=grafana&logoColor=ff7a00)
+
+**Iniciado** - Observabilidade e monitoramento unificado
+
+[![GitHub](https://img.shields.io/badge/-GitHub-000000?style=flat-square&logo=github&logoColor=ff7a00)](https://github.com/rsdenck/pmo)
+
+![PBM](https://img.shields.io/badge/-PBM_Backup_Manager-000000?style=for-the-badge&logo=shield&logoColor=ff7a00)
+
+**Iniciado** - Gerenciamento de backup enterprise
+
+[![GitHub](https://img.shields.io/badge/-GitHub-000000?style=flat-square&logo=github&logoColor=ff7a00)](https://github.com/rsdenck/pbm)
+
+</td>
+<td valign="top" width="50%">
+
+### Ferramentas Especializadas
+
+![PLB](https://img.shields.io/badge/-PLB_Load_Balancer-000000?style=for-the-badge&logo=cisco&logoColor=ff7a00)
+
+**Iniciado** - Load balancing avançado
+
+[![GitHub](https://img.shields.io/badge/-GitHub-000000?style=flat-square&logo=github&logoColor=ff7a00)](https://github.com/rsdenck/plb)
+
+![PNM](https://img.shields.io/badge/-PNM_Network_Manager-000000?style=for-the-badge&logo=cisco&logoColor=ff7a00)
+
+**Iniciado** - Gerenciamento de rede SDN
+
+[![GitHub](https://img.shields.io/badge/-GitHub-000000?style=flat-square&logo=github&logoColor=ff7a00)](https://github.com/rsdenck/pnm)
+
+![PSM](https://img.shields.io/badge/-PSM_Security_Manager-000000?style=for-the-badge&logo=shield&logoColor=ff7a00)
+
+**Iniciado** - Gerenciamento de segurança
+
+[![GitHub](https://img.shields.io/badge/-GitHub-000000?style=flat-square&logo=github&logoColor=ff7a00)](https://github.com/rsdenck/psm)
+
+![PCS](https://img.shields.io/badge/-PCS_Container_Service-000000?style=for-the-badge&logo=docker&logoColor=ff7a00)
+
+**Iniciado** - Orquestração de containers
+
+[![GitHub](https://img.shields.io/badge/-GitHub-000000?style=flat-square&logo=github&logoColor=ff7a00)](https://github.com/rsdenck/pcs)
+
+</td>
+</tr>
+</table>
+
+### Projeto Oficial Proxmox
+
+[![Proxmox](https://img.shields.io/badge/-Proxmox_Official-000000?style=for-the-badge&logo=proxmox&logoColor=ff7a00)](https://github.com/proxmox)
+
+**Repositório oficial da Proxmox Server Solutions GmbH**
+
+</div>
+
+---
+
 ## Roadmap
 
 <div align="center">

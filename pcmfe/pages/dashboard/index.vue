@@ -181,14 +181,38 @@ const clusters = ref([])
 const fetchData = async () => {
   loading.value = true
   try {
-    const { data: dashboardData } = await useFetch(`${config.public.apiBase}/dashboard`)
+    // Buscar dados do dashboard
+    const dashboardResponse = await $fetch(`${config.public.apiBase}/dashboard/`)
     
-    if (dashboardData.value) {
-      stats.value = dashboardData.value.stats
-      clusters.value = dashboardData.value.clusters || []
+    if (dashboardResponse) {
+      stats.value = dashboardResponse.stats || {
+        total_clusters: 0,
+        online_clusters: 0,
+        total_nodes: 0,
+        online_nodes: 0,
+        total_vms: 0,
+        running_vms: 0,
+        total_containers: 0,
+        running_containers: 0,
+        total_tenants: 0
+      }
+      clusters.value = dashboardResponse.clusters || []
     }
   } catch (error) {
-    console.error('Failed to fetch data', error)
+    console.error('Failed to fetch dashboard data', error)
+    // Definir valores padrão em caso de erro
+    stats.value = {
+      total_clusters: 0,
+      online_clusters: 0,
+      total_nodes: 0,
+      online_nodes: 0,
+      total_vms: 0,
+      running_vms: 0,
+      total_containers: 0,
+      running_containers: 0,
+      total_tenants: 0
+    }
+    clusters.value = []
   } finally {
     loading.value = false
   }
