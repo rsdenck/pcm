@@ -323,13 +323,7 @@ const filteredTenants = computed(() => {
 
 // Methods
 const navigateToNew = () => {
-  console.log('Botão Novo Tenant clicado!')
-  try {
-    router.push('/dashboard/tenants/new')
-    console.log('Navegação iniciada para /dashboard/tenants/new')
-  } catch (error) {
-    console.error('Erro na navegação:', error)
-  }
+  navigateTo('/dashboard/tenants/new')
 }
 
 const fetchTenants = async () => {

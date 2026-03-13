@@ -590,13 +590,81 @@ const textareaStyles = {
 
 // Methods
 const fetchTemplates = async () => {
-  try {
-    const response = await $fetch(`${config.public.apiBase}/tenants/templates/list`)
-    templates.value = response || []
-  } catch (error) {
-    console.error('Failed to fetch templates:', error)
-    templates.value = []
-  }
+  // Templates pré-definidos localmente
+  templates.value = [
+    {
+      name: 'Básico',
+      description: 'Configuração mínima para testes',
+      billing_plan: 'basic',
+      quotas: {
+        cpu_limit: 4,
+        ram_limit: 8,
+        max_vms: 2,
+        max_containers: 5,
+        max_storage_capacity: 100,
+        max_volumes: 10,
+        snapshot_limit: 20,
+        max_networks: 2,
+        max_floating_ips: 2,
+        max_load_balancers: 1,
+        max_vlans: 5
+      }
+    },
+    {
+      name: 'Padrão',
+      description: 'Configuração recomendada para produção',
+      billing_plan: 'standard',
+      quotas: {
+        cpu_limit: 16,
+        ram_limit: 32,
+        max_vms: 10,
+        max_containers: 20,
+        max_storage_capacity: 500,
+        max_volumes: 50,
+        snapshot_limit: 100,
+        max_networks: 5,
+        max_floating_ips: 5,
+        max_load_balancers: 3,
+        max_vlans: 10
+      }
+    },
+    {
+      name: 'Premium',
+      description: 'Configuração avançada com recursos ilimitados',
+      billing_plan: 'premium',
+      quotas: {
+        cpu_limit: 64,
+        ram_limit: 128,
+        max_vms: 50,
+        max_containers: 100,
+        max_storage_capacity: 2000,
+        max_volumes: 200,
+        snapshot_limit: 500,
+        max_networks: 20,
+        max_floating_ips: 20,
+        max_load_balancers: 10,
+        max_vlans: 50
+      }
+    },
+    {
+      name: 'Enterprise',
+      description: 'Configuração customizável para grandes empresas',
+      billing_plan: 'enterprise',
+      quotas: {
+        cpu_limit: 256,
+        ram_limit: 512,
+        max_vms: 200,
+        max_containers: 500,
+        max_storage_capacity: 10000,
+        max_volumes: 1000,
+        snapshot_limit: 2000,
+        max_networks: 100,
+        max_floating_ips: 100,
+        max_load_balancers: 50,
+        max_vlans: 200
+      }
+    }
+  ]
 }
 
 const applyTemplate = (template: any) => {
@@ -628,48 +696,117 @@ const getBillingPlanColor = (plan: string) => {
 
 const submitForm = async () => {
   submitting.value = true
+  const toast = useToast()
   
   try {
     // Validar campos obrigatórios
-    if (!form.value.name || !form.value.organization || !form.value.owner) {
-      const toast = useToast()
+    if (!form.value.name || !form.value.name.trim()) {
       toast.add({
-        title: 'Campos Obrigatórios',
-        description: 'Preencha todos os campos obrigatórios (Nome, Organização e Proprietário).',
+        title: 'Campo Obrigatório',
+        description: 'O nome do tenant é obrigatório.',
         color: 'red',
         timeout: 5000
       })
+      submitting.value = false
+      return
+    }
+
+    if (!form.value.organization || !form.value.organization.trim()) {
+      toast.add({
+        title: 'Campo Obrigatório',
+        description: 'A organização é obrigatória.',
+        color: 'red',
+        timeout: 5000
+      })
+      submitting.value = false
+      return
+    }
+
+    if (!form.value.owner || !form.value.owner.trim()) {
+      toast.add({
+        title: 'Campo Obrigatório',
+        description: 'O proprietário é obrigatório.',
+        color: 'red',
+        timeout: 5000
+      })
+      submitting.value = false
       return
     }
     
-    // Remove empty values
-    const cleanForm = Object.fromEntries(
-      Object.entries(form.value).filter(([_, value]) => 
-        value !== null && value !== undefined && value !== ''
-      )
-    )
+    // Preparar dados para envio
+    const tenantData = {
+      name: form.value.name.trim(),
+      organization: form.value.organization.trim(),
+      owner: form.value.owner.trim(),
+      description: form.value.description?.trim() || null,
+      region: form.value.region?.trim() || null,
+      datacenter: form.value.datacenter?.trim() || null,
+      billing_plan: form.value.billing_plan || 'standard',
+      
+      // Compute quotas
+      cpu_limit: form.value.cpu_limit || null,
+      ram_limit: form.value.ram_limit || null,
+      max_vms: form.value.max_vms || null,
+      max_containers: form.value.max_containers || null,
+      
+      // Storage quotas
+      max_storage_capacity: form.value.max_storage_capacity || null,
+      max_volumes: form.value.max_volumes || null,
+      snapshot_limit: form.value.snapshot_limit || null,
+      
+      // Network quotas
+      max_networks: form.value.max_networks || null,
+      max_floating_ips: form.value.max_floating_ips || null,
+      max_load_balancers: form.value.max_load_balancers || null,
+      max_vlans: form.value.max_vlans || null,
+      
+      // Configuration
+      configuration: form.value.configuration || {},
+      tenant_metadata: form.value.tenant_metadata || {},
+      network_isolation: form.value.network_isolation || {}
+    }
+    
+    console.log('Enviando dados do tenant:', tenantData)
     
     const response = await $fetch(`${config.public.apiBase}/tenants/`, {
       method: 'POST',
-      body: cleanForm
+      body: tenantData
     })
     
-    const toast = useToast()
+    console.log('Resposta do servidor:', response)
+    
     toast.add({
-      title: 'Tenant Criado!',
+      title: 'Sucesso!',
       description: `O tenant "${form.value.name}" foi criado com sucesso.`,
       color: 'green',
       timeout: 5000
     })
     
-    await router.push('/dashboard/tenants')
+    // Aguardar um pouco antes de redirecionar
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    await navigateTo('/dashboard/tenants')
   } catch (error: any) {
-    console.error('Failed to create tenant:', error)
+    console.error('Erro ao criar tenant:', error)
     
-    const toast = useToast()
+    let errorMessage = 'Verifique os dados e tente novamente.'
+    
+    if (error.data?.detail) {
+      errorMessage = error.data.detail
+    } else if (error.message) {
+      errorMessage = error.message
+    } else if (error.statusCode === 409) {
+      errorMessage = 'Um tenant com este nome já existe.'
+    } else if (error.statusCode === 422) {
+      errorMessage = 'Dados inválidos. Verifique os campos.'
+    } else if (error.statusCode === 401) {
+      errorMessage = 'Você não está autenticado. Faça login novamente.'
+    } else if (error.statusCode === 403) {
+      errorMessage = 'Você não tem permissão para criar tenants.'
+    }
+    
     toast.add({
       title: 'Erro ao Criar Tenant',
-      description: error.data?.detail || error.message || 'Verifique os dados e tente novamente.',
+      description: errorMessage,
       color: 'red',
       timeout: 8000
     })
