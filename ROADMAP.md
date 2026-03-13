@@ -380,6 +380,20 @@ Stack completo com OpenTelemetry
 
 </div>
 
+#### Frontend Security & Authentication ⏳
+
+<div align="center">
+
+| Task | Descrição | Status |
+|------|-----------|--------|
+| ![Task](https://img.shields.io/badge/-1.1-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Authentication Infrastructure & Services | ✅ **CONCLUÍDO** |
+| ![Task](https://img.shields.io/badge/-1.2-000000?style=flat-square&logo=code&logoColor=ff7a00) | Login & Authentication UI | ⏳ **PRÓXIMO** |
+| ![Task](https://img.shields.io/badge/-1.3-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) | Protected Routes & Access Control | ⏳ **PENDENTE** |
+| ![Task](https://img.shields.io/badge/-1.4-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) | Role-Based Access Control (RBAC) | ⏳ **PENDENTE** |
+| ![Task](https://img.shields.io/badge/-1.5-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) | Input Validation & Sanitization | ⏳ **PENDENTE** |
+
+</div>
+
 #### Próximas Tasks do Módulo de Backup ⏳
 
 <div align="center">
