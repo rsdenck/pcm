@@ -102,6 +102,8 @@ class Tenant(Base):
     clusters: Mapped[list["ProxmoxCluster"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     vms: Mapped[list["VirtualMachine"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     backup_policies: Mapped[list["BackupPolicy"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
+    roles: Mapped[list["Role"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
+    audit_logs: Mapped[list["AuditLog"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Tenant(id={self.id}, name={self.name}, organization={self.organization})>"

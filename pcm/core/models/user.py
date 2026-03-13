@@ -1,8 +1,9 @@
-from sqlalchemy import String, Boolean, DateTime, Enum as SQLEnum, ForeignKey
+from sqlalchemy import String, Boolean, DateTime, Enum as SQLEnum, ForeignKey, JSON, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from uuid import uuid4
 from enum import Enum
+from typing import List
 from pcm.core.database.base import Base
 
 
@@ -30,6 +31,16 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     
+    # Account security
+    is_locked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    password_changed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    password_expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    
+    # Permissions cache (JSON for quick access)
+    permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    
     tenant_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=True
     )
@@ -41,6 +52,11 @@ class User(Base):
     last_login: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     tenant: Mapped["Tenant"] = relationship(back_populates="users")
+    roles: Mapped[List["Role"]] = relationship(
+        secondary="user_roles",
+        back_populates="users"
+    )
+    audit_logs: Mapped[List["AuditLog"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email={self.email}, role={self.role})>"
