@@ -41,6 +41,12 @@ class User(Base):
     # Permissions cache (JSON for quick access)
     permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     
+    # LDAP integration
+    ldap_dn: Mapped[str | None] = mapped_column(String(500), nullable=True, index=True)
+    ldap_groups: Mapped[list | None] = mapped_column(JSON, nullable=True, default=list)
+    is_ldap_user: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    last_ldap_sync: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    
     tenant_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=True
     )
@@ -60,3 +66,9 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email={self.email}, role={self.role})>"
+    
+    def verify_password(self, password: str) -> bool:
+        """Verify password against hashed password."""
+        from passlib.context import CryptContext
+        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        return pwd_context.verify(password, self.hashed_password)

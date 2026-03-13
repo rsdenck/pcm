@@ -86,6 +86,20 @@
 
       <!-- Formulário Principal -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Botão de Toggle Sidebar (Mobile) -->
+        <div class="lg:hidden mb-4">
+          <UButton 
+            @click="sidebarOpen = !sidebarOpen"
+            color="gray"
+            variant="outline"
+            size="md"
+            class="w-full"
+          >
+            <UIcon :name="sidebarOpen ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'" class="mr-2" />
+            {{ sidebarOpen ? 'Fechar Guia' : 'Abrir Guia' }}
+          </UButton>
+        </div>
+
         <!-- Formulário -->
         <div class="lg:col-span-2">
           <UCard class="shadow-sm border border-gray-200 bg-white">
@@ -449,7 +463,7 @@
         </div>
 
         <!-- Painel Lateral de Ajuda -->
-        <div class="space-y-6">
+        <div class="space-y-6" :class="{ 'hidden lg:block': !sidebarOpen, 'block': sidebarOpen }">
           <!-- Card de Templates -->
           <UCard v-if="!showTemplates" class="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <template #header>
@@ -534,6 +548,7 @@ const router = useRouter()
 // Reactive data
 const submitting = ref(false)
 const showTemplates = ref(true)
+const sidebarOpen = ref(true)
 const templates = ref([])
 
 // Form data

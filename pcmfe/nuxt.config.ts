@@ -22,6 +22,11 @@ export default defineNuxtConfig({
     }
   },
   
+  // Register RBAC directives
+  plugins: [
+    '~/plugins/rbac-directives.ts'
+  ],
+  
   app: {
     head: {
       title: 'PCM - Proxmox Center Manager',

@@ -389,7 +389,7 @@ Stack completo com OpenTelemetry
 | ![Task](https://img.shields.io/badge/-1.1-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Authentication Infrastructure & Services | ✅ **CONCLUÍDO** |
 | ![Task](https://img.shields.io/badge/-1.2-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Login & Authentication UI | ✅ **CONCLUÍDO** |
 | ![Task](https://img.shields.io/badge/-1.3-000000?style=flat-square&logo=checkmarx&logoColor=00ff00) | Protected Routes & Access Control | ✅ **CONCLUÍDO** |
-| ![Task](https://img.shields.io/badge/-1.4-000000?style=flat-square&logo=code&logoColor=ff7a00) | Role-Based Access Control (RBAC) | ⏳ **PRÓXIMO** |
+| ![Task](https://img.shields.io/badge/-1.4-000000?style=flat-square&logo=code&logoColor=ff7a00) | Role-Based Access Control (RBAC) | ⏳ **EM PROGRESSO** |
 | ![Task](https://img.shields.io/badge/-1.5-000000?style=flat-square&logo=hourglass&logoColor=ff7a00) | Input Validation & Sanitization | ⏳ **PENDENTE** |
 
 </div>
