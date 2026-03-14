@@ -377,12 +377,6 @@ const syncCluster = async (clusterId: string) => {
     syncing.value[clusterId] = false
   }
 }
-      timeout: 5000
-    })
-  } finally {
-    syncing.value[clusterId] = false
-  }
-}
 
 // Utility functions
 const getStatusColor = (status: string) => {

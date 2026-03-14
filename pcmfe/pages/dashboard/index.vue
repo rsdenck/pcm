@@ -18,12 +18,36 @@
     </header>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col justify-center items-center h-[50vh] gap-4">
+    <div v-if="loading && !error" class="flex flex-col justify-center items-center h-[50vh] gap-4">
       <div class="relative w-12 h-12">
         <div class="absolute inset-0 border-4 border-[#e5e5e5] rounded-full"></div>
         <div class="absolute inset-0 border-4 border-[#E57000] border-t-transparent rounded-full animate-spin"></div>
       </div>
       <p class="text-[#666666] text-sm">Carregando dados...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="flex flex-col justify-center items-center h-[50vh] gap-4">
+      <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+        <UIcon name="i-heroicons-exclamation-triangle" class="text-red-600 text-3xl" />
+      </div>
+      <div class="text-center max-w-md">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Erro ao Carregar Dashboard</h3>
+        <p class="text-sm text-gray-600 mb-4">{{ error }}</p>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-left">
+          <p class="text-xs font-medium text-blue-900 mb-2">Para iniciar o backend:</p>
+          <code class="text-xs text-blue-800 block bg-white p-2 rounded">
+            cd pcm && python -m pcm.services.api.main
+          </code>
+        </div>
+        <UButton 
+          @click="fetchData"
+          class="bg-[#E57000] hover:bg-[#CC6600] text-white"
+        >
+          <UIcon name="i-heroicons-arrow-path" class="mr-2" />
+          Tentar Novamente
+        </UButton>
+      </div>
     </div>
 
     <!-- Content -->
@@ -205,7 +229,7 @@ const fetchData = async () => {
   try {
     const dashboardResponse = await fetchWithTimeout(
       `${config.public.apiBase}/dashboard/`,
-      { timeout: 30000 }
+      { timeout: 10000 }  // Reduzido para 10s para feedback mais rápido
     )
     
     if (dashboardResponse) {
@@ -217,7 +241,16 @@ const fetchData = async () => {
     }
   } catch (err: any) {
     console.error('Failed to fetch dashboard data:', err)
-    error.value = err.message || 'Falha ao carregar dados do dashboard'
+    
+    // Mensagem de erro mais clara
+    if (err.message.includes('timeout')) {
+      error.value = 'O servidor não respondeu a tempo. Verifique se o backend está rodando.'
+    } else if (err.message.includes('fetch')) {
+      error.value = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando na porta 8000.'
+    } else {
+      error.value = err.message || 'Falha ao carregar dados do dashboard'
+    }
+    
     stats.value = defaultStats
     clusters.value = []
   } finally {
