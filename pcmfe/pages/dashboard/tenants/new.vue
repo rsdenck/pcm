@@ -542,8 +542,11 @@
 </template>
 
 <script setup lang="ts">
+import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
+
 const config = useRuntimeConfig()
 const router = useRouter()
+const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
 
 // Reactive data
 const submitting = ref(false)
@@ -716,6 +719,11 @@ const getBillingPlanColor = (plan: string) => {
 }
 
 const submitForm = async () => {
+  // Prevenir múltiplos submits
+  if (submitting.value) {
+    return
+  }
+  
   submitting.value = true
   const toast = useToast()
   
@@ -774,7 +782,6 @@ const submitForm = async () => {
       max_storage_capacity: form.value.max_storage_capacity || null,
       max_volumes: form.value.max_volumes || null,
       snapshot_limit: form.value.snapshot_limit || null,
-      
       // Network quotas
       max_networks: form.value.max_networks || null,
       max_floating_ips: form.value.max_floating_ips || null,
@@ -787,14 +794,11 @@ const submitForm = async () => {
       network_isolation: form.value.network_isolation || {}
     }
     
-    console.log('Enviando dados do tenant:', tenantData)
-    
-    const response = await $fetch(`${config.public.apiBase}/tenants/`, {
+    const response = await fetchWithTimeout(`${config.public.apiBase}/tenants/`, {
       method: 'POST',
-      body: tenantData
+      body: tenantData,
+      timeout: 30000
     })
-    
-    console.log('Resposta do servidor:', response)
     
     toast.add({
       title: 'Sucesso!',
@@ -839,6 +843,10 @@ const submitForm = async () => {
 // Lifecycle
 onMounted(() => {
   fetchTemplates()
+})
+
+onBeforeUnmount(() => {
+  cancelAll()
 })
 
 // Meta tags

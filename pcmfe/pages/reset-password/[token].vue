@@ -166,6 +166,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth } from '~/composables/useAuth'
 import { useFormValidation } from '~/composables/useFormValidation'
+import { useDebounce } from '~/composables/useDebounce'
 
 definePageMeta({
   layout: 'blank'
@@ -181,6 +182,7 @@ useHead({
 const route = useRoute()
 const auth = useAuth()
 const validation = useFormValidation()
+const { debounce } = useDebounce()
 const resetSuccess = ref(false)
 
 const formData = ref({
@@ -233,9 +235,9 @@ const handleResetPassword = async () => {
     return
   }
 
-  // Attempt password reset
+  // Attempt password reset with debounce
   const token = route.params.token as string
-  const success = await auth.confirmPasswordReset(token, formData.value.password)
+  const success = await debounce(() => auth.confirmPasswordReset(token, formData.value.password), 500, 'reset-password')
 
   if (success) {
     resetSuccess.value = true

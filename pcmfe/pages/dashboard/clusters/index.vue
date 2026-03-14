@@ -230,15 +230,20 @@
 import { useRBAC3 } from '~/composables/useRBAC3'
 import { useRuntimeConfig } from '#app'
 import { useRouter } from 'vue-router'
+import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
+import { useDebounce } from '~/composables/useDebounce'
 
 const config = useRuntimeConfig()
 const router = useRouter()
 const toast = useToast()
 const { canRead, canUpdate, canDelete } = useRBAC3()
+const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
+const { debounce } = useDebounce()
 
 // Reactive data
 const clusters = ref([])
 const loading = ref(true)
+const error = ref<string | null>(null)
 const searchQuery = ref('')
 const statusFilter = ref('all')
 const currentPage = ref(1)
@@ -278,29 +283,29 @@ const filteredClusters = computed(() => {
 
 // Methods
 const navigateToNew = () => {
-  console.log('Botão Adicionar Cluster clicado!')
-  try {
-    router.push('/dashboard/clusters/new')
-    console.log('Navegação iniciada para /dashboard/clusters/new')
-  } catch (error) {
-    console.error('Erro na navegação:', error)
-  }
+  router.push('/dashboard/clusters/new')
 }
 
 const fetchClusters = async () => {
   try {
     loading.value = true
-    const response = await $fetch(`${config.public.apiBase}/clusters/`)
+    error.value = null
+    
+    const response = await fetchWithTimeout(
+      `${config.public.apiBase}/clusters/`,
+      { timeout: 30000 }
+    )
     
     clusters.value = response || []
     totalClusters.value = response?.length || 0
-  } catch (error) {
-    console.error('Failed to fetch clusters:', error)
+  } catch (err: any) {
+    console.error('Failed to fetch clusters:', err)
+    error.value = err.message || 'Falha ao carregar clusters'
     clusters.value = []
-    const toast = useToast()
+    
     toast.add({
       title: 'Erro ao Carregar Clusters',
-      description: 'Não foi possível carregar a lista de clusters.',
+      description: error.value,
       color: 'red',
       timeout: 5000
     })
@@ -309,13 +314,12 @@ const fetchClusters = async () => {
   }
 }
 
-const refreshClusters = () => {
-  fetchClusters()
+const refreshClusters = async () => {
+  await debounce(() => fetchClusters(), 500, 'clusters-refresh')
 }
 
 const navigateToCluster = (clusterId: string) => {
   if (!canRead('cluster')) {
-    const toast = useToast()
     toast.add({
       title: 'Permissão Negada',
       description: 'Você não tem permissão para visualizar clusters.',
@@ -329,7 +333,6 @@ const navigateToCluster = (clusterId: string) => {
 
 const editCluster = (clusterId: string) => {
   if (!canUpdate('cluster')) {
-    const toast = useToast()
     toast.add({
       title: 'Permissão Negada',
       description: 'Você não tem permissão para editar clusters.',
@@ -342,27 +345,38 @@ const editCluster = (clusterId: string) => {
 }
 
 const syncCluster = async (clusterId: string) => {
+  // Prevenir múltiplos cliques
+  if (syncing.value[clusterId]) {
+    return
+  }
+  
   syncing.value[clusterId] = true
   try {
-    await $fetch(`${config.public.apiBase}/clusters/${clusterId}/sync`, {
-      method: 'POST'
-    })
+    await fetchWithTimeout(
+      `${config.public.apiBase}/clusters/${clusterId}/sync`,
+      { method: 'POST', timeout: 30000 }
+    )
+    
     await fetchClusters()
     
-    const toast = useToast()
     toast.add({
       title: 'Cluster Sincronizado',
       description: 'O cluster foi sincronizado com sucesso.',
       color: 'green',
       timeout: 3000
     })
-  } catch (error) {
-    console.error('Failed to sync cluster', error)
-    const toast = useToast()
+  } catch (err: any) {
+    console.error('Failed to sync cluster', err)
     toast.add({
       title: 'Erro na Sincronização',
-      description: 'Não foi possível sincronizar o cluster.',
+      description: err.message || 'Não foi possível sincronizar o cluster.',
       color: 'red',
+      timeout: 5000
+    })
+  } finally {
+    syncing.value[clusterId] = false
+  }
+}
       timeout: 5000
     })
   } finally {
@@ -400,6 +414,10 @@ const formatDate = (dateString: string) => {
 // Lifecycle
 onMounted(() => {
   fetchClusters()
+})
+
+onBeforeUnmount(() => {
+  cancelAll()
 })
 
 // Watch para refetch quando necessário

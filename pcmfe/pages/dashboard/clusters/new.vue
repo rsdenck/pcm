@@ -287,8 +287,14 @@
 </template>
 
 <script setup lang="ts">
+import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
+import { useDebounce } from '~/composables/useDebounce'
+
 const config = useRuntimeConfig()
 const router = useRouter()
+const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
+const { debounce } = useDebounce()
+
 const submitting = ref(false)
 const testing = ref(false)
 const testResult = ref<{ success: boolean; message: string } | null>(null)
@@ -337,13 +343,13 @@ const canTest = computed(() => {
 
 // Função para testar conexão
 const testConnection = async () => {
-  if (!canTest.value) return
+  if (!canTest.value || testing.value) return
   
   testing.value = true
   testResult.value = null
   
   try {
-    const response = await $fetch(`${config.public.apiBase}/clusters/test-connection`, {
+    const response = await fetchWithTimeout(`${config.public.apiBase}/clusters/test-connection`, {
       method: 'POST',
       body: {
         hostname: form.value.hostname,
@@ -351,7 +357,8 @@ const testConnection = async () => {
         api_token_id: form.value.api_token_id,
         api_token_secret: form.value.api_token_secret,
         verify_ssl: form.value.verify_ssl
-      }
+      },
+      timeout: 30000
     })
     
     testResult.value = {
@@ -361,7 +368,7 @@ const testConnection = async () => {
   } catch (error: any) {
     testResult.value = {
       success: false,
-      message: error.data?.message || 'Erro de conexão. Verifique os dados e tente novamente.'
+      message: error.message || 'Erro de conexão. Verifique os dados e tente novamente.'
     }
   } finally {
     testing.value = false
@@ -370,12 +377,18 @@ const testConnection = async () => {
 
 // Função para submeter o formulário
 const submitForm = async () => {
+  // Prevenir múltiplos submits
+  if (submitting.value) {
+    return
+  }
+  
   submitting.value = true
   
   try {
-    await $fetch(`${config.public.apiBase}/clusters`, {
+    await fetchWithTimeout(`${config.public.apiBase}/clusters`, {
       method: 'POST',
-      body: form.value
+      body: form.value,
+      timeout: 30000
     })
     
     // Mostrar notificação de sucesso
@@ -396,7 +409,7 @@ const submitForm = async () => {
     const toast = useToast()
     toast.add({
       title: 'Erro ao Adicionar Cluster',
-      description: error.data?.message || 'Verifique os dados e tente novamente.',
+      description: error.message || 'Verifique os dados e tente novamente.',
       color: 'red',
       timeout: 8000
     })
@@ -404,6 +417,11 @@ const submitForm = async () => {
     submitting.value = false
   }
 }
+
+// Lifecycle
+onBeforeUnmount(() => {
+  cancelAll()
+})
 
 // Watchers para limpar resultado do teste quando dados mudam
 watch([

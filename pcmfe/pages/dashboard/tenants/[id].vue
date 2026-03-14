@@ -112,7 +112,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.ram.percentage}%` }"
                 ></div>
               </div>
@@ -125,7 +125,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.vms.percentage}%` }"
                 ></div>
               </div>
@@ -138,7 +138,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.containers.percentage}%` }"
                 ></div>
               </div>
@@ -160,7 +160,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.storage.percentage}%` }"
                 ></div>
               </div>
@@ -173,7 +173,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.volumes.percentage}%` }"
                 ></div>
               </div>
@@ -186,7 +186,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-pink-500 to-pink-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.snapshots.percentage}%` }"
                 ></div>
               </div>
@@ -208,7 +208,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-teal-500 to-teal-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.networks.percentage}%` }"
                 ></div>
               </div>
@@ -221,7 +221,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-cyan-500 to-cyan-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.floating_ips.percentage}%` }"
                 ></div>
               </div>
@@ -234,7 +234,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-red-500 to-red-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.load_balancers.percentage}%` }"
                 ></div>
               </div>
@@ -247,7 +247,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-gradient-to-r from-orange-500 to-orange-600 h-2 rounded-full transition-all"
+                  class="bg-gradient-to-r from-[#E57000] to-[#FF8C00] h-2 rounded-full transition-all"
                   :style="{ width: `${tenant.quota_status.vlans.percentage}%` }"
                 ></div>
               </div>
@@ -347,13 +347,17 @@
 </template>
 
 <script setup lang="ts">
+import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
+
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
 
 // Reactive data
 const tenant = ref(null)
 const loading = ref(true)
+const error = ref<string | null>(null)
 
 // Get tenant ID from route
 const tenantId = route.params.id as string
@@ -362,10 +366,17 @@ const tenantId = route.params.id as string
 const fetchTenant = async () => {
   try {
     loading.value = true
-    const response = await $fetch(`${config.public.apiBase}/tenants/${tenantId}`)
+    error.value = null
+    
+    const response = await fetchWithTimeout(
+      `${config.public.apiBase}/tenants/${tenantId}`,
+      { timeout: 30000 }
+    )
+    
     tenant.value = response
-  } catch (error) {
-    console.error('Failed to fetch tenant:', error)
+  } catch (err: any) {
+    console.error('Failed to fetch tenant:', err)
+    error.value = err.message || 'Falha ao carregar tenant'
     tenant.value = null
   } finally {
     loading.value = false
@@ -386,7 +397,6 @@ const openSettings = () => {
 }
 
 const openPBM = () => {
-  // Futuro: PBM - Proxmox Backup Manager
   const toast = useToast()
   toast.add({
     title: 'PBM - Proxmox Backup Manager',
@@ -397,7 +407,6 @@ const openPBM = () => {
 }
 
 const openPMO = () => {
-  // Futuro: PMO - Proxmox Platform Observability
   const toast = useToast()
   toast.add({
     title: 'PMO - Platform Observability',
@@ -441,6 +450,10 @@ const formatDate = (dateString: string) => {
 // Lifecycle
 onMounted(() => {
   fetchTenant()
+})
+
+onBeforeUnmount(() => {
+  cancelAll()
 })
 
 // Meta tags

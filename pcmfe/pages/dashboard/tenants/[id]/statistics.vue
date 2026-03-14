@@ -204,14 +204,20 @@
 </template>
 
 <script setup lang="ts">
+import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
+import { useDebounce } from '~/composables/useDebounce'
+
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
+const { debounce } = useDebounce()
 
 // Reactive data
 const tenant = ref(null)
 const stats = ref(null)
 const loading = ref(true)
+const error = ref<string | null>(null)
 
 // Get tenant ID from route
 const tenantId = route.params.id as string
@@ -220,9 +226,14 @@ const tenantId = route.params.id as string
 const fetchStats = async () => {
   try {
     loading.value = true
+    error.value = null
     
     // Fetch tenant info
-    const tenantResponse = await $fetch(`${config.public.apiBase}/tenants/${tenantId}`)
+    const tenantResponse = await fetchWithTimeout(
+      `${config.public.apiBase}/tenants/${tenantId}`,
+      { timeout: 30000 }
+    )
+    
     tenant.value = tenantResponse
     
     // Fetch statistics (using tenant data for now, will be separate endpoint later)
@@ -239,16 +250,17 @@ const fetchStats = async () => {
         }
       }
     }
-  } catch (error) {
-    console.error('Failed to fetch statistics:', error)
+  } catch (err: any) {
+    console.error('Failed to fetch statistics:', err)
+    error.value = err.message || 'Falha ao carregar estatísticas'
     stats.value = null
   } finally {
     loading.value = false
   }
 }
 
-const refreshStats = () => {
-  fetchStats()
+const refreshStats = async () => {
+  await debounce(() => fetchStats(), 500, 'stats-refresh')
 }
 
 // Utility functions
@@ -278,6 +290,10 @@ const formatQuotaName = (key: string) => {
 // Lifecycle
 onMounted(() => {
   fetchStats()
+})
+
+onBeforeUnmount(() => {
+  cancelAll()
 })
 
 // Meta tags

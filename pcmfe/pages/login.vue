@@ -154,6 +154,7 @@
 import { ref, onMounted } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import { useFormValidation } from '~/composables/useFormValidation'
+import { useDebounce } from '~/composables/useDebounce'
 
 definePageMeta({
   layout: 'blank'
@@ -168,6 +169,7 @@ useHead({
 
 const auth = useAuth()
 const validation = useFormValidation()
+const { debounce } = useDebounce()
 
 const formData = ref({
   email: '',
@@ -196,8 +198,8 @@ const handleLogin = async () => {
     return
   }
 
-  // Attempt login
-  await auth.login(formData.value.email, formData.value.password)
+  // Prevent multiple submissions with debounce
+  await debounce(() => auth.login(formData.value.email, formData.value.password), 500, 'login')
 }
 
 /**

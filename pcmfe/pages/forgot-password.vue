@@ -115,6 +115,7 @@
 import { ref } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import { useFormValidation } from '~/composables/useFormValidation'
+import { useDebounce } from '~/composables/useDebounce'
 
 definePageMeta({
   layout: 'blank'
@@ -129,6 +130,7 @@ useHead({
 
 const auth = useAuth()
 const validation = useFormValidation()
+const { debounce } = useDebounce()
 
 const email = ref('')
 const resetSent = ref(false)
@@ -150,8 +152,8 @@ const handleResetRequest = async () => {
     return
   }
 
-  // Request password reset
-  const success = await auth.requestPasswordReset(email.value)
+  // Request password reset with debounce
+  const success = await debounce(() => auth.requestPasswordReset(email.value), 500, 'forgot-password')
   if (success) {
     resetSent.value = true
   }

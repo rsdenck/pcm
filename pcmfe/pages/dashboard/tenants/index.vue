@@ -287,15 +287,20 @@
 import { useRBAC3 } from '~/composables/useRBAC3'
 import { useRuntimeConfig } from '#app'
 import { useRouter } from 'vue-router'
+import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
+import { useDebounce } from '~/composables/useDebounce'
 
 const config = useRuntimeConfig()
 const router = useRouter()
 const toast = useToast()
 const { canRead, canUpdate, canDelete } = useRBAC3()
+const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
+const { debounce } = useDebounce()
 
 // Reactive data
 const tenants = ref([])
 const loading = ref(true)
+const error = ref<string | null>(null)
 const searchQuery = ref('')
 const statusFilter = ref('all')
 const currentPage = ref(1)
@@ -341,22 +346,29 @@ const navigateToNew = () => {
 const fetchTenants = async () => {
   try {
     loading.value = true
-    const response = await $fetch(`${config.public.apiBase}/tenants/`, {
-      query: {
-        limit: 100,
-        offset: 0
+    error.value = null
+    
+    const response = await fetchWithTimeout(
+      `${config.public.apiBase}/tenants/`,
+      {
+        query: {
+          limit: 100,
+          offset: 0
+        },
+        timeout: 30000
       }
-    })
+    )
     
     tenants.value = response || []
     totalTenants.value = response?.length || 0
-  } catch (error) {
-    console.error('Failed to fetch tenants:', error)
+  } catch (err: any) {
+    console.error('Failed to fetch tenants:', err)
+    error.value = err.message || 'Falha ao carregar tenants'
     tenants.value = []
-    const toast = useToast()
+    
     toast.add({
       title: 'Erro ao Carregar Tenants',
-      description: 'Não foi possível carregar a lista de tenants.',
+      description: error.value,
       color: 'red',
       timeout: 5000
     })
@@ -365,8 +377,8 @@ const fetchTenants = async () => {
   }
 }
 
-const refreshTenants = () => {
-  fetchTenants()
+const refreshTenants = async () => {
+  await debounce(() => fetchTenants(), 500, 'tenants-refresh')
 }
 
 const navigateToTenant = (tenantId: string) => {
@@ -375,7 +387,6 @@ const navigateToTenant = (tenantId: string) => {
 
 const editTenant = (tenantId: string) => {
   if (!canUpdate('tenant')) {
-    const toast = useToast()
     toast.add({
       title: 'Permissão Negada',
       description: 'Você não tem permissão para editar tenants.',
@@ -451,6 +462,10 @@ const formatDate = (dateString: string) => {
 // Lifecycle
 onMounted(() => {
   fetchTenants()
+})
+
+onBeforeUnmount(() => {
+  cancelAll()
 })
 
 // Watch para refetch quando necessário

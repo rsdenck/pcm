@@ -162,9 +162,15 @@
 
 <script setup lang="ts">
 import { useRuntimeConfig } from '#app'
+import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
+import { useDebounce } from '~/composables/useDebounce'
 
 const config = useRuntimeConfig()
+const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
+const { debounce } = useDebounce()
+
 const loading = ref(true)
+const error = ref<string | null>(null)
 
 const stats = ref({
   total_clusters: 0,
@@ -180,51 +186,54 @@ const stats = ref({
 
 const clusters = ref([])
 
+const defaultStats = {
+  total_clusters: 0,
+  online_clusters: 0,
+  total_nodes: 0,
+  online_nodes: 0,
+  total_vms: 0,
+  running_vms: 0,
+  total_containers: 0,
+  running_containers: 0,
+  total_tenants: 0
+}
+
 const fetchData = async () => {
   loading.value = true
+  error.value = null
+  
   try {
-    // Buscar dados do dashboard
-    const dashboardResponse = await $fetch(`${config.public.apiBase}/dashboard/`)
+    const dashboardResponse = await fetchWithTimeout(
+      `${config.public.apiBase}/dashboard/`,
+      { timeout: 30000 }
+    )
     
     if (dashboardResponse) {
-      stats.value = dashboardResponse.stats || {
-        total_clusters: 0,
-        online_clusters: 0,
-        total_nodes: 0,
-        online_nodes: 0,
-        total_vms: 0,
-        running_vms: 0,
-        total_containers: 0,
-        running_containers: 0,
-        total_tenants: 0
-      }
+      stats.value = dashboardResponse.stats || defaultStats
       clusters.value = dashboardResponse.clusters || []
+    } else {
+      stats.value = defaultStats
+      clusters.value = []
     }
-  } catch (error) {
-    console.error('Failed to fetch dashboard data', error)
-    // Definir valores padrão em caso de erro
-    stats.value = {
-      total_clusters: 0,
-      online_clusters: 0,
-      total_nodes: 0,
-      online_nodes: 0,
-      total_vms: 0,
-      running_vms: 0,
-      total_containers: 0,
-      running_containers: 0,
-      total_tenants: 0
-    }
+  } catch (err: any) {
+    console.error('Failed to fetch dashboard data:', err)
+    error.value = err.message || 'Falha ao carregar dados do dashboard'
+    stats.value = defaultStats
     clusters.value = []
   } finally {
     loading.value = false
   }
 }
 
-const refreshData = () => {
-  fetchData()
+const refreshData = async () => {
+  await debounce(() => fetchData(), 500, 'dashboard-refresh')
 }
 
 onMounted(() => {
   fetchData()
+})
+
+onBeforeUnmount(() => {
+  cancelAll()
 })
 </script>
