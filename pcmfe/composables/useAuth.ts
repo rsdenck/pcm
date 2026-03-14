@@ -192,7 +192,7 @@ export const useAuth = () => {
   }
 
   // Setup session event listeners
-  if (process.client) {
+  if (typeof window !== 'undefined') {
     sessionManager.on('session-warning', () => {
       // Emit event for session warning modal
       window.dispatchEvent(new CustomEvent('auth-session-warning'))

@@ -7,6 +7,7 @@
 
 import { ref, computed, watch } from 'vue'
 import { useAuth } from './useAuth'
+import { authService } from '~/services/auth/authService'
 
 export interface UserPermission {
   id: string
@@ -109,16 +110,34 @@ export const useRBAC3 = () => {
     
     try {
       const config = useRuntimeConfig()
-      const response = await $fetch(`${config.public.apiBase}/users/${authUser.value.id}/rbac`, {
+      const token = authService.getAccessToken()
+      
+      if (!token) {
+        error.value = 'No authentication token available'
+        return
+      }
+      
+      const response = await $fetch<{
+        id: string
+        email: string
+        username: string
+        full_name?: string
+        roles: UserRole[]
+        permissions: UserPermission[]
+        is_ldap_user: boolean
+        ldap_groups?: string[]
+      }>(`${config.public.apiBase}/users/${authUser.value.id}/rbac`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${useAuth().getAccessToken()}`
+          'Authorization': `Bearer ${token}`
         }
       })
       
-      rbacUser.value = response
-      userRoles.value = response.roles || []
-      userPermissions.value = response.permissions || []
+      if (response) {
+        rbacUser.value = response
+        userRoles.value = response.roles || []
+        userPermissions.value = response.permissions || []
+      }
     } catch (err: any) {
       error.value = err.message || 'Failed to load RBAC information'
       console.error('Error loading RBAC:', err)

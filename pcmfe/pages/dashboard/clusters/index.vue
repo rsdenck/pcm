@@ -228,9 +228,12 @@
 
 <script setup lang="ts">
 import { useRBAC3 } from '~/composables/useRBAC3'
+import { useRuntimeConfig } from '#app'
+import { useRouter } from 'vue-router'
 
 const config = useRuntimeConfig()
 const router = useRouter()
+const toast = useToast()
 const { canRead, canUpdate, canDelete } = useRBAC3()
 
 // Reactive data

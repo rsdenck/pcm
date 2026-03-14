@@ -2,7 +2,6 @@
 import { useAuth } from '~/composables/useAuth'
 
 const auth = useAuth()
-const router = useRouter()
 
 // Initialize auth and redirect
 onMounted(async () => {

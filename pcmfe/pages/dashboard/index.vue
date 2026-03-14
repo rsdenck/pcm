@@ -161,6 +161,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRuntimeConfig } from '#app'
+
 const config = useRuntimeConfig()
 const loading = ref(true)
 
