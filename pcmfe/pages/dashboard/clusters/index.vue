@@ -230,15 +230,11 @@
 import { useRBAC3 } from '~/composables/useRBAC3'
 import { useRuntimeConfig } from '#app'
 import { useRouter } from 'vue-router'
-import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
-import { useDebounce } from '~/composables/useDebounce'
 
 const config = useRuntimeConfig()
 const router = useRouter()
 const toast = useToast()
 const { canRead, canUpdate, canDelete } = useRBAC3()
-const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
-const { debounce } = useDebounce()
 
 // Reactive data
 const clusters = ref([])
@@ -287,25 +283,24 @@ const navigateToNew = () => {
 }
 
 const fetchClusters = async () => {
+  loading.value = true
+  error.value = null
+  
   try {
-    loading.value = true
-    error.value = null
-    
-    const response = await fetchWithTimeout(
-      `${config.public.apiBase}/clusters/`,
-      { timeout: 30000 }
-    )
+    const response = await $fetch(`${config.public.apiBase}/clusters/`, {
+      timeout: 10000
+    })
     
     clusters.value = response || []
     totalClusters.value = response?.length || 0
   } catch (err: any) {
     console.error('Failed to fetch clusters:', err)
-    error.value = err.message || 'Falha ao carregar clusters'
+    error.value = 'Não foi possível carregar clusters'
     clusters.value = []
     
     toast.add({
       title: 'Erro ao Carregar Clusters',
-      description: error.value,
+      description: 'Verifique se o backend está rodando',
       color: 'red',
       timeout: 5000
     })
@@ -314,8 +309,8 @@ const fetchClusters = async () => {
   }
 }
 
-const refreshClusters = async () => {
-  await debounce(() => fetchClusters(), 500, 'clusters-refresh')
+const refreshClusters = () => {
+  fetchClusters()
 }
 
 const navigateToCluster = (clusterId: string) => {
@@ -345,17 +340,14 @@ const editCluster = (clusterId: string) => {
 }
 
 const syncCluster = async (clusterId: string) => {
-  // Prevenir múltiplos cliques
-  if (syncing.value[clusterId]) {
-    return
-  }
+  if (syncing.value[clusterId]) return
   
   syncing.value[clusterId] = true
   try {
-    await fetchWithTimeout(
-      `${config.public.apiBase}/clusters/${clusterId}/sync`,
-      { method: 'POST', timeout: 30000 }
-    )
+    await $fetch(`${config.public.apiBase}/clusters/${clusterId}/sync`, {
+      method: 'POST',
+      timeout: 30000
+    })
     
     await fetchClusters()
     
@@ -369,7 +361,7 @@ const syncCluster = async (clusterId: string) => {
     console.error('Failed to sync cluster', err)
     toast.add({
       title: 'Erro na Sincronização',
-      description: err.message || 'Não foi possível sincronizar o cluster.',
+      description: 'Não foi possível sincronizar o cluster.',
       color: 'red',
       timeout: 5000
     })
@@ -408,10 +400,6 @@ const formatDate = (dateString: string) => {
 // Lifecycle
 onMounted(() => {
   fetchClusters()
-})
-
-onBeforeUnmount(() => {
-  cancelAll()
 })
 
 // Watch para refetch quando necessário

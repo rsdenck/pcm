@@ -63,7 +63,7 @@ def upgrade() -> None:
             tenant_id = COALESCE(slug, id),
             organization = COALESCE(name, 'Default Organization'),
             owner = 'System Administrator',
-            status = 'active'
+            status = 'ACTIVE'
         WHERE tenant_id IS NULL
     """)
     

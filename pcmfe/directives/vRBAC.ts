@@ -5,7 +5,7 @@
  * for conditional rendering based on user permissions and roles.
  */
 
-import { DirectiveBinding, VNode } from 'vue'
+import type { Directive } from 'vue'
 import { useRBAC3 } from '~/composables/useRBAC3'
 
 /**
@@ -17,8 +17,8 @@ import { useRBAC3 } from '~/composables/useRBAC3'
  *   v-rbac-permission.any="['vm:create', 'vm:delete']"
  *   v-rbac-permission.all="['vm:create', 'vm:delete']"
  */
-export const vRBACPermission = {
-  mounted(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+export const vRBACPermission: Directive = {
+  mounted(el: any, binding: any) {
     const { hasPermission, hasAnyPermission, hasAllPermissions } = useRBAC3()
     
     let hasAccess = false
@@ -38,7 +38,7 @@ export const vRBACPermission = {
       el.setAttribute('data-rbac-hidden', 'true')
     }
   },
-  updated(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+  updated(el: any, binding: any) {
     const { hasPermission, hasAnyPermission, hasAllPermissions } = useRBAC3()
     
     let hasAccess = false
@@ -71,8 +71,8 @@ export const vRBACPermission = {
  *   v-rbac-role.any="['admin', 'tenant_admin']"
  *   v-rbac-role.all="['admin', 'tenant_admin']"
  */
-export const vRBACRole = {
-  mounted(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+export const vRBACRole: Directive = {
+  mounted(el: any, binding: any) {
     const { hasRole } = useRBAC3()
     
     let hasAccess = false
@@ -92,7 +92,7 @@ export const vRBACRole = {
       el.setAttribute('data-rbac-hidden', 'true')
     }
   },
-  updated(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+  updated(el: any, binding: any) {
     const { hasRole } = useRBAC3()
     
     let hasAccess = false
@@ -123,8 +123,8 @@ export const vRBACRole = {
  *   v-rbac-resource="{ resource: 'vm', action: 'create' }"
  *   v-rbac-resource="{ resource: 'backup', action: 'restore' }"
  */
-export const vRBACResource = {
-  mounted(el: HTMLElement, binding: DirectiveBinding<{ resource: string; action: string }>) {
+export const vRBACResource: Directive = {
+  mounted(el: any, binding: any) {
     const { checkResourceAccess } = useRBAC3()
     
     const { resource, action } = binding.value
@@ -135,7 +135,7 @@ export const vRBACResource = {
       el.setAttribute('data-rbac-hidden', 'true')
     }
   },
-  updated(el: HTMLElement, binding: DirectiveBinding<{ resource: string; action: string }>) {
+  updated(el: any, binding: any) {
     const { checkResourceAccess } = useRBAC3()
     
     const { resource, action } = binding.value
@@ -160,8 +160,8 @@ export const vRBACResource = {
  *   v-rbac-disable="'vm:create'"
  *   v-rbac-disable="['vm:create', 'vm:delete']"
  */
-export const vRBACDisable = {
-  mounted(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+export const vRBACDisable: Directive = {
+  mounted(el: any, binding: any) {
     const { hasPermission, hasAnyPermission, hasAllPermissions } = useRBAC3()
     
     let hasAccess = false
@@ -180,7 +180,7 @@ export const vRBACDisable = {
       el.classList.add('opacity-50', 'cursor-not-allowed')
     }
   },
-  updated(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+  updated(el: any, binding: any) {
     const { hasPermission, hasAnyPermission, hasAllPermissions } = useRBAC3()
     
     let hasAccess = false

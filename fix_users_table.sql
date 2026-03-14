@@ -1,0 +1,13 @@
+-- Add missing columns to users table
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER DEFAULT 0 NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMP;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_expires_at TIMESTAMP;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS ldap_dn VARCHAR(500);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS ldap_groups JSON;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_ldap_user BOOLEAN DEFAULT FALSE NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_ldap_sync TIMESTAMP;
+
+-- Create index on ldap_dn if it doesn't exist
+CREATE INDEX IF NOT EXISTS ix_users_ldap_dn ON users(ldap_dn);

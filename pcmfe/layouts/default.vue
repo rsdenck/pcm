@@ -5,8 +5,8 @@
       <!-- Logo & Brand -->
       <div class="p-6 border-b border-[#e5e5e5]">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-lg bg-white border border-[#e5e5e5] flex items-center justify-center">
-            <img src="/favicon.svg" alt="PCM Logo" class="w-8 h-8" />
+          <div class="w-12 h-12 rounded-lg bg-white border-2 border-gray-200 flex items-center justify-center p-2">
+            <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/proxmox-logo-icon-svg-download-png-7196884.png?f=webp" alt="Proxmox Logo" class="w-full h-full object-contain" />
           </div>
           <div class="flex-1">
             <h1 class="text-sm font-bold text-[#E57000] uppercase tracking-wide leading-tight">Proxmox Center Manager</h1>

@@ -90,7 +90,7 @@
         <!-- Back to Login -->
         <div class="mt-6 text-center">
           <NuxtLink
-            to="/login"
+            to="/"
             class="text-sm text-[#E57000] hover:text-[#FF8C00] font-medium transition-colors flex items-center justify-center gap-2"
           >
             <UIcon name="i-heroicons-arrow-left" />
@@ -118,7 +118,8 @@ import { useFormValidation } from '~/composables/useFormValidation'
 import { useDebounce } from '~/composables/useDebounce'
 
 definePageMeta({
-  layout: 'blank'
+  layout: 'blank',
+  requiresAuth: false
 })
 
 useHead({

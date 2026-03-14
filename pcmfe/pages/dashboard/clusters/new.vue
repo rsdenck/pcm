@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 p-4 md:p-8">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <!-- Header simples -->
       <header class="mb-6">
         <div class="flex items-center gap-4 mb-4">
@@ -26,9 +26,9 @@
       </header>
 
       <!-- Formulário Principal -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <!-- Formulário (ocupa mais espaço) -->
-        <div class="lg:col-span-3">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Formulário (ocupa 2 colunas) -->
+        <div class="lg:col-span-2">
           <UCard class="shadow-sm border border-gray-200 bg-white">
             <form @submit.prevent="submitForm" class="space-y-6">
               <!-- Informações Básicas -->
@@ -287,13 +287,9 @@
 </template>
 
 <script setup lang="ts">
-import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
-import { useDebounce } from '~/composables/useDebounce'
-
 const config = useRuntimeConfig()
 const router = useRouter()
-const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
-const { debounce } = useDebounce()
+const toast = useToast()
 
 const submitting = ref(false)
 const testing = ref(false)
@@ -349,7 +345,7 @@ const testConnection = async () => {
   testResult.value = null
   
   try {
-    const response = await fetchWithTimeout(`${config.public.apiBase}/clusters/test-connection`, {
+    const response = await $fetch(`${config.public.apiBase}/clusters/test-connection`, {
       method: 'POST',
       body: {
         hostname: form.value.hostname,
@@ -358,7 +354,7 @@ const testConnection = async () => {
         api_token_secret: form.value.api_token_secret,
         verify_ssl: form.value.verify_ssl
       },
-      timeout: 30000
+      timeout: 10000
     })
     
     testResult.value = {
@@ -385,14 +381,12 @@ const submitForm = async () => {
   submitting.value = true
   
   try {
-    await fetchWithTimeout(`${config.public.apiBase}/clusters`, {
+    await $fetch(`${config.public.apiBase}/clusters`, {
       method: 'POST',
       body: form.value,
-      timeout: 30000
+      timeout: 10000
     })
     
-    // Mostrar notificação de sucesso
-    const toast = useToast()
     toast.add({
       title: 'Cluster Adicionado!',
       description: `O cluster "${form.value.name}" foi configurado com sucesso.`,
@@ -405,8 +399,6 @@ const submitForm = async () => {
   } catch (error: any) {
     console.error('Failed to create cluster', error)
     
-    // Mostrar notificação de erro
-    const toast = useToast()
     toast.add({
       title: 'Erro ao Adicionar Cluster',
       description: error.message || 'Verifique os dados e tente novamente.',
@@ -417,11 +409,6 @@ const submitForm = async () => {
     submitting.value = false
   }
 }
-
-// Lifecycle
-onBeforeUnmount(() => {
-  cancelAll()
-})
 
 // Watchers para limpar resultado do teste quando dados mudam
 watch([

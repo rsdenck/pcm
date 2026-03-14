@@ -347,12 +347,9 @@
 </template>
 
 <script setup lang="ts">
-import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
-
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
 
 // Reactive data
 const tenant = ref(null)
@@ -364,14 +361,13 @@ const tenantId = route.params.id as string
 
 // Methods
 const fetchTenant = async () => {
+  loading.value = true
+  error.value = null
+  
   try {
-    loading.value = true
-    error.value = null
-    
-    const response = await fetchWithTimeout(
-      `${config.public.apiBase}/tenants/${tenantId}`,
-      { timeout: 30000 }
-    )
+    const response = await $fetch(`${config.public.apiBase}/tenants/${tenantId}`, {
+      timeout: 10000
+    })
     
     tenant.value = response
   } catch (err: any) {
@@ -450,10 +446,6 @@ const formatDate = (dateString: string) => {
 // Lifecycle
 onMounted(() => {
   fetchTenant()
-})
-
-onBeforeUnmount(() => {
-  cancelAll()
 })
 
 // Meta tags

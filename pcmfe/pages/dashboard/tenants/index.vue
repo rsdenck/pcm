@@ -286,16 +286,10 @@
 <script setup lang="ts">
 import { useRBAC3 } from '~/composables/useRBAC3'
 import { useRuntimeConfig } from '#app'
-import { useRouter } from 'vue-router'
-import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
-import { useDebounce } from '~/composables/useDebounce'
 
 const config = useRuntimeConfig()
-const router = useRouter()
 const toast = useToast()
 const { canRead, canUpdate, canDelete } = useRBAC3()
-const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
-const { debounce } = useDebounce()
 
 // Reactive data
 const tenants = ref([])
@@ -339,36 +333,42 @@ const filteredTenants = computed(() => {
 })
 
 // Methods
-const navigateToNew = () => {
-  navigateTo('/dashboard/tenants/new')
+const navigateToNew = async () => {
+  if (!canUpdate('tenant')) {
+    toast.add({
+      title: 'Permissão Negada',
+      description: 'Você não tem permissão para criar tenants.',
+      color: 'red',
+      timeout: 3000
+    })
+    return
+  }
+  await navigateTo('/dashboard/tenants/new')
 }
 
 const fetchTenants = async () => {
+  loading.value = true
+  error.value = null
+  
   try {
-    loading.value = true
-    error.value = null
-    
-    const response = await fetchWithTimeout(
-      `${config.public.apiBase}/tenants/`,
-      {
-        query: {
-          limit: 100,
-          offset: 0
-        },
-        timeout: 30000
-      }
-    )
+    const response = await $fetch(`${config.public.apiBase}/tenants/`, {
+      query: {
+        limit: 100,
+        offset: 0
+      },
+      timeout: 10000
+    })
     
     tenants.value = response || []
     totalTenants.value = response?.length || 0
   } catch (err: any) {
     console.error('Failed to fetch tenants:', err)
-    error.value = err.message || 'Falha ao carregar tenants'
+    error.value = 'Não foi possível carregar tenants'
     tenants.value = []
     
     toast.add({
       title: 'Erro ao Carregar Tenants',
-      description: error.value,
+      description: 'Verifique se o backend está rodando',
       color: 'red',
       timeout: 5000
     })
@@ -377,15 +377,15 @@ const fetchTenants = async () => {
   }
 }
 
-const refreshTenants = async () => {
-  await debounce(() => fetchTenants(), 500, 'tenants-refresh')
+const refreshTenants = () => {
+  fetchTenants()
 }
 
-const navigateToTenant = (tenantId: string) => {
-  router.push(`/dashboard/tenants/${tenantId}`)
+const navigateToTenant = async (tenantId: string) => {
+  await navigateTo(`/dashboard/tenants/${tenantId}`)
 }
 
-const editTenant = (tenantId: string) => {
+const editTenant = async (tenantId: string) => {
   if (!canUpdate('tenant')) {
     toast.add({
       title: 'Permissão Negada',
@@ -395,10 +395,10 @@ const editTenant = (tenantId: string) => {
     })
     return
   }
-  router.push(`/dashboard/tenants/${tenantId}/edit`)
+  await navigateTo(`/dashboard/tenants/${tenantId}/edit`)
 }
 
-const viewTenantStats = (tenantId: string) => {
+const viewTenantStats = async (tenantId: string) => {
   if (!canRead('tenant')) {
     const toast = useToast()
     toast.add({
@@ -409,7 +409,7 @@ const viewTenantStats = (tenantId: string) => {
     })
     return
   }
-  router.push(`/dashboard/tenants/${tenantId}/statistics`)
+  await navigateTo(`/dashboard/tenants/${tenantId}/statistics`)
 }
 
 // Utility functions
@@ -462,10 +462,6 @@ const formatDate = (dateString: string) => {
 // Lifecycle
 onMounted(() => {
   fetchTenants()
-})
-
-onBeforeUnmount(() => {
-  cancelAll()
 })
 
 // Watch para refetch quando necessário

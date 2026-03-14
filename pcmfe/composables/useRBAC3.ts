@@ -155,27 +155,58 @@ export const useRBAC3 = () => {
   }
   
   const checkResourceAccess = (resource: string, action: string): boolean => {
+    // PROVIDER_ADMIN tem acesso total a todos os recursos
+    const userRoles = authUser.value?.roles || []
+    if (userRoles.includes('PROVIDER_ADMIN') || userRoles.includes('provider_admin')) {
+      return true
+    }
+    
     const permissionName = `${resource}:${action}`
     return hasPermission.value(permissionName)
   }
   
   const canCreate = (resource: string): boolean => {
+    // PROVIDER_ADMIN tem acesso total
+    const userRoles = authUser.value?.roles || []
+    if (userRoles.includes('PROVIDER_ADMIN') || userRoles.includes('provider_admin')) {
+      return true
+    }
     return checkResourceAccess(resource, 'create')
   }
   
   const canRead = (resource: string): boolean => {
+    // PROVIDER_ADMIN tem acesso total
+    const userRoles = authUser.value?.roles || []
+    if (userRoles.includes('PROVIDER_ADMIN') || userRoles.includes('provider_admin')) {
+      return true
+    }
     return checkResourceAccess(resource, 'read')
   }
   
   const canUpdate = (resource: string): boolean => {
+    // PROVIDER_ADMIN tem acesso total
+    const userRoles = authUser.value?.roles || []
+    if (userRoles.includes('PROVIDER_ADMIN') || userRoles.includes('provider_admin')) {
+      return true
+    }
     return checkResourceAccess(resource, 'update')
   }
   
   const canDelete = (resource: string): boolean => {
+    // PROVIDER_ADMIN tem acesso total
+    const userRoles = authUser.value?.roles || []
+    if (userRoles.includes('PROVIDER_ADMIN') || userRoles.includes('provider_admin')) {
+      return true
+    }
     return checkResourceAccess(resource, 'delete')
   }
   
   const canManage = (resource: string): boolean => {
+    // PROVIDER_ADMIN tem acesso total
+    const userRoles = authUser.value?.roles || []
+    if (userRoles.includes('PROVIDER_ADMIN') || userRoles.includes('provider_admin')) {
+      return true
+    }
     return checkResourceAccess(resource, 'manage')
   }
   

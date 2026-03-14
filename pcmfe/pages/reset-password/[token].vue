@@ -140,7 +140,7 @@
           <!-- Back to Login -->
           <div class="text-center">
             <NuxtLink
-              to="/login"
+              to="/"
               class="text-sm text-[#E57000] hover:text-[#FF8C00] font-medium transition-colors"
             >
               Back to Login
@@ -169,7 +169,8 @@ import { useFormValidation } from '~/composables/useFormValidation'
 import { useDebounce } from '~/composables/useDebounce'
 
 definePageMeta({
-  layout: 'blank'
+  layout: 'blank',
+  requiresAuth: false
 })
 
 useHead({
@@ -241,9 +242,9 @@ const handleResetPassword = async () => {
 
   if (success) {
     resetSuccess.value = true
-    // Redirect to login after 3 seconds
+    // Redirect to root (login page) after 3 seconds
     setTimeout(() => {
-      navigateTo('/login')
+      navigateTo('/')
     }, 3000)
   }
 }

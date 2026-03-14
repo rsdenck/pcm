@@ -95,8 +95,8 @@ export const useAuth = () => {
       isAuthenticated.value = false
       sessionManager.stop()
 
-      // Redirect to login
-      await router.push('/login')
+      // Redirect to root (login page)
+      await router.push('/')
     } catch (err: any) {
       error.value = err.message || 'Logout failed'
     } finally {
@@ -191,6 +191,20 @@ export const useAuth = () => {
     return roles.every(role => hasRole(role))
   }
 
+  /**
+   * Check if user has any of the given permissions
+   */
+  const hasAnyPermission = (permissions: string[]): boolean => {
+    return permissions.some(permission => hasPermission(permission))
+  }
+
+  /**
+   * Check if user has all of the given permissions
+   */
+  const hasAllPermissions = (permissions: string[]): boolean => {
+    return permissions.every(permission => hasPermission(permission))
+  }
+
   // Setup session event listeners
   if (typeof window !== 'undefined') {
     sessionManager.on('session-warning', () => {
@@ -226,6 +240,8 @@ export const useAuth = () => {
     hasPermission,
     hasRole,
     hasAnyRole,
-    hasAllRoles
+    hasAllRoles,
+    hasAnyPermission,
+    hasAllPermissions
   }
 }

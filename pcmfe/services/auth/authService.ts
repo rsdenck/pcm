@@ -33,12 +33,13 @@ interface RefreshResponse {
 }
 
 export class AuthService {
-  private apiBase: string
   private tokenManager: TokenManager
+  private apiBase: string
 
-  constructor(apiBase: string = '/api/v1') {
-    this.apiBase = apiBase
+  constructor() {
     this.tokenManager = tokenManager
+    // Use hardcoded API base for now - will be configurable later
+    this.apiBase = 'http://192.168.130.10:9001/api/v1'
   }
 
   /**
@@ -46,7 +47,12 @@ export class AuthService {
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${this.apiBase}/auth/login`, {
+      const loginUrl = `${this.apiBase}/auth/login`
+      
+      console.log('Attempting login to:', loginUrl)
+      console.log('Credentials:', { email: credentials.email, password: '***' })
+      
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -54,12 +60,16 @@ export class AuthService {
         body: JSON.stringify(credentials)
       })
 
+      console.log('Login response status:', response.status)
+
       if (!response.ok) {
         const error = await response.json()
+        console.error('Login failed:', error)
         throw new Error(error.detail || 'Login failed')
       }
 
       const data: AuthResponse = await response.json()
+      console.log('Login successful, user:', data.user)
 
       // Store tokens
       this.tokenManager.setTokens({

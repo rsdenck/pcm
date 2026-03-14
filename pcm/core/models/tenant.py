@@ -1,4 +1,4 @@
-from sqlalchemy import String, Boolean, DateTime, Text, Integer, JSON, Enum as SQLEnum
+from sqlalchemy import String, Boolean, DateTime, Text, Integer, JSON, Enum as SQLEnum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from uuid import uuid4
@@ -9,10 +9,10 @@ from pcm.core.database.base import Base
 
 class TenantStatus(str, Enum):
     """Status do tenant."""
-    ACTIVE = "active"
-    SUSPENDED = "suspended"
-    PENDING = "pending"
-    ARCHIVED = "archived"
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    PENDING = "PENDING"
+    ARCHIVED = "ARCHIVED"
 
 
 class BillingPlan(str, Enum):
@@ -35,6 +35,9 @@ class Tenant(Base):
 
     # Primary identification
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    organization_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     slug: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     tenant_id: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
@@ -98,10 +101,13 @@ class Tenant(Base):
     )
     
     # Relationships
+    organization: Mapped["Organization"] = relationship(back_populates="tenants")
     users: Mapped[list["User"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     clusters: Mapped[list["ProxmoxCluster"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     vms: Mapped[list["VirtualMachine"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     backup_policies: Mapped[list["BackupPolicy"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
+    projects: Mapped[list["Project"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
+    groups: Mapped[list["Group"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     roles: Mapped[list["Role"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
     audit_logs: Mapped[list["AuditLog"]] = relationship(back_populates="tenant", cascade="all, delete-orphan")
 

@@ -86,20 +86,6 @@
 
       <!-- Formulário Principal -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Botão de Toggle Sidebar (Mobile) -->
-        <div class="lg:hidden mb-4">
-          <UButton 
-            @click="sidebarOpen = !sidebarOpen"
-            color="gray"
-            variant="outline"
-            size="md"
-            class="w-full"
-          >
-            <UIcon :name="sidebarOpen ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'" class="mr-2" />
-            {{ sidebarOpen ? 'Fechar Guia' : 'Abrir Guia' }}
-          </UButton>
-        </div>
-
         <!-- Formulário -->
         <div class="lg:col-span-2">
           <UCard class="shadow-sm border border-gray-200 bg-white">
@@ -462,8 +448,25 @@
           </UCard>
         </div>
 
-        <!-- Painel Lateral de Ajuda -->
-        <div class="space-y-6" :class="{ 'hidden lg:block': !sidebarOpen, 'block': sidebarOpen }">
+        <!-- Painel Lateral de Ajuda (Recolhível) -->
+        <div class="space-y-4">
+          <!-- Toggle para mostrar/ocultar ajuda -->
+          <UButton 
+            @click="showHelp = !showHelp"
+            color="gray"
+            variant="outline"
+            size="sm"
+            class="w-full justify-between border border-gray-200"
+          >
+            <span class="flex items-center gap-2">
+              <UIcon name="i-heroicons-question-mark-circle" />
+              <span class="text-sm">{{ showHelp ? 'Ocultar Ajuda' : 'Mostrar Ajuda' }}</span>
+            </span>
+            <UIcon :name="showHelp ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'" />
+          </UButton>
+
+          <!-- Cards de Ajuda (Recolhíveis) -->
+          <div v-show="showHelp" class="space-y-6">
           <!-- Card de Templates -->
           <UCard v-if="!showTemplates" class="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <template #header>
@@ -535,6 +538,7 @@
               </div>
             </div>
           </UCard>
+          </div>
         </div>
       </div>
     </div>
@@ -542,16 +546,14 @@
 </template>
 
 <script setup lang="ts">
-import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
-
 const config = useRuntimeConfig()
 const router = useRouter()
-const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
+const toast = useToast()
 
 // Reactive data
 const submitting = ref(false)
 const showTemplates = ref(true)
-const sidebarOpen = ref(true)
+const showHelp = ref(false)
 const templates = ref([])
 
 // Form data
@@ -725,7 +727,6 @@ const submitForm = async () => {
   }
   
   submitting.value = true
-  const toast = useToast()
   
   try {
     // Validar campos obrigatórios
@@ -794,10 +795,10 @@ const submitForm = async () => {
       network_isolation: form.value.network_isolation || {}
     }
     
-    const response = await fetchWithTimeout(`${config.public.apiBase}/tenants/`, {
+    const response = await $fetch(`${config.public.apiBase}/tenants/`, {
       method: 'POST',
       body: tenantData,
-      timeout: 30000
+      timeout: 10000
     })
     
     toast.add({
@@ -843,10 +844,6 @@ const submitForm = async () => {
 // Lifecycle
 onMounted(() => {
   fetchTemplates()
-})
-
-onBeforeUnmount(() => {
-  cancelAll()
 })
 
 // Meta tags

@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://192.168.130.10:8000/api/v1'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://192.168.130.10:9001/api/v1'
     }
   },
   
@@ -36,8 +36,15 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Cloud Control Plane for Proxmox Infrastructure' }
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
+        { rel: 'icon', type: 'image/png', href: 'https://cdn.iconscout.com/icon/premium/png-256-thumb/proxmox-logo-icon-svg-download-png-7196884.png?f=webp' }
       ]
+    }
+  },
+  
+  // Redirect root to login
+  router: {
+    options: {
+      strict: true
     }
   },
   

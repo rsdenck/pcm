@@ -186,12 +186,8 @@
 
 <script setup lang="ts">
 import { useRuntimeConfig } from '#app'
-import { useFetchWithTimeout } from '~/composables/useFetchWithTimeout'
-import { useDebounce } from '~/composables/useDebounce'
 
 const config = useRuntimeConfig()
-const { fetchWithTimeout, cancelAll } = useFetchWithTimeout()
-const { debounce } = useDebounce()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -210,63 +206,32 @@ const stats = ref({
 
 const clusters = ref([])
 
-const defaultStats = {
-  total_clusters: 0,
-  online_clusters: 0,
-  total_nodes: 0,
-  online_nodes: 0,
-  total_vms: 0,
-  running_vms: 0,
-  total_containers: 0,
-  running_containers: 0,
-  total_tenants: 0
-}
-
 const fetchData = async () => {
   loading.value = true
   error.value = null
   
   try {
-    const dashboardResponse = await fetchWithTimeout(
-      `${config.public.apiBase}/dashboard/`,
-      { timeout: 10000 }  // Reduzido para 10s para feedback mais rápido
-    )
+    const dashboardResponse = await $fetch(`${config.public.apiBase}/dashboard/`, {
+      timeout: 10000
+    })
     
     if (dashboardResponse) {
-      stats.value = dashboardResponse.stats || defaultStats
+      stats.value = dashboardResponse.stats || stats.value
       clusters.value = dashboardResponse.clusters || []
-    } else {
-      stats.value = defaultStats
-      clusters.value = []
     }
   } catch (err: any) {
     console.error('Failed to fetch dashboard data:', err)
-    
-    // Mensagem de erro mais clara
-    if (err.message.includes('timeout')) {
-      error.value = 'O servidor não respondeu a tempo. Verifique se o backend está rodando.'
-    } else if (err.message.includes('fetch')) {
-      error.value = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando na porta 8000.'
-    } else {
-      error.value = err.message || 'Falha ao carregar dados do dashboard'
-    }
-    
-    stats.value = defaultStats
-    clusters.value = []
+    error.value = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.'
   } finally {
     loading.value = false
   }
 }
 
-const refreshData = async () => {
-  await debounce(() => fetchData(), 500, 'dashboard-refresh')
+const refreshData = () => {
+  fetchData()
 }
 
 onMounted(() => {
   fetchData()
-})
-
-onBeforeUnmount(() => {
-  cancelAll()
 })
 </script>

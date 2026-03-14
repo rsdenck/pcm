@@ -1,10 +1,11 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
+from pathlib import Path
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(Path(__file__).parent.parent / ".env"),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore"
@@ -22,7 +23,7 @@ class Settings(BaseSettings):
     api_workers: int = 4
 
     # Database
-    database_url: str = "postgresql+asyncpg://postgres:2020Tra@localhost:5432/pcmdata"
+    database_url: str = "postgresql+asyncpg://pcm_user:pcm123@localhost:5433/pcmdata_db"
     database_pool_size: int = 20
     database_max_overflow: int = 10
 
